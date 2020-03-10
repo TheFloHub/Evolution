@@ -1,0 +1,6 @@
+---
+BreakBeforeBraces: Allman
+NamespaceIndentation: None
+PointerAlignment: Middle
+
+...
