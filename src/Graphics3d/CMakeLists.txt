@@ -2,6 +2,7 @@ project(Graphics3d)
 
 find_package(GLEW REQUIRED)
 find_package(glm REQUIRED)
+find_package(glfw3 REQUIRED)
 
 add_library(${PROJECT_NAME} 
 	# 
@@ -93,7 +94,7 @@ add_library(${PROJECT_NAME}
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ./include)
-target_link_libraries(${PROJECT_NAME} PUBLIC glm GLEW::GLEW)
+target_link_libraries(${PROJECT_NAME} PUBLIC glm GLEW::GLEW PRIVATE glfw)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD_REQUIRED on)

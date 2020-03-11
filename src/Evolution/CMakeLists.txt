@@ -6,7 +6,7 @@ find_package(glfw3 REQUIRED)
 add_executable(${PROJECT_NAME} 
 	main.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw GLEW::GLEW Math Graphics)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw GLEW::GLEW Math Graphics3d)
 
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)

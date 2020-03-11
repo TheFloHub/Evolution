@@ -91,7 +91,7 @@ G3d::ShaderPtr G3d::ShaderManager::getTerrain() const
 bool G3d::ShaderManager::initStandardShader()
 {
 	std::string baseHome("D:\\Eigene Dokumente\\Visual Studio 2015\\Projects\\Graphics3dSolution\\Graphics3d\\resources\\shader\\");
-	std::string baseWork("D:\\GitHubProjects\\Graphics3d\\Graphics3dSolution\\Graphics3d\\Resources\\Shader\\");
+	std::string baseWork("D:\\Code\\Evolution\\src\\Graphics3d\\src\\Resources\\Shader\\");
 
 	std::string base = baseWork;
 	
