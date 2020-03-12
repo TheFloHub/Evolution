@@ -4,7 +4,9 @@ find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
 
 add_executable(${PROJECT_NAME} 
-	main.cpp)
+	main.cpp
+	Individual.h
+	Individual.cpp)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw GLEW::GLEW Math Graphics3d)
 

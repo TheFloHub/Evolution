@@ -90,10 +90,10 @@ G3d::ShaderPtr G3d::ShaderManager::getTerrain() const
 
 bool G3d::ShaderManager::initStandardShader()
 {
-	std::string baseHome("D:\\Eigene Dokumente\\Visual Studio 2015\\Projects\\Graphics3dSolution\\Graphics3d\\resources\\shader\\");
+	std::string baseHome("D:\\Repositories\\Evolution\\src\\Graphics3d\\src\\Resources\\Shader\\");
 	std::string baseWork("D:\\Code\\Evolution\\src\\Graphics3d\\src\\Resources\\Shader\\");
 
-	std::string base = baseWork;
+	std::string base = baseHome;
 	
 	// TODO: make Visual Studio resource files or so
 	if (!loadFromFile("Diffuse", base + "Diffuse.vert", base + "Diffuse.frag"))

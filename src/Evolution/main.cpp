@@ -1,5 +1,6 @@
 #pragma warning(disable : 4201)
 #include <Graphics3d/Assets/MaterialManager.h>
+#include <Graphics3d/Assets/Materials/PBRMaterial.h>
 #include <Graphics3d/Assets/Mesh.h>
 #include <Graphics3d/Assets/MeshManager.h>
 #include <Graphics3d/Assets/Shader.h>
@@ -66,15 +67,61 @@ bool initGL(int width, int height)
   TextureManager::getInstance().initStandardTextures();
   MaterialManager::getInstance().initStandardMaterials();
 
+  // renderer
+  pRenderer = std::unique_ptr<SceneRenderer>(new SceneRenderer(width, height));
+
   // graph
   pRoot = std::unique_ptr<SceneObject>(new SceneObject("Root"));
 
-  
+  // load resources from hard disk
+  MeshPtr meshSphere;
+  try
+  {
+    meshSphere = MeshManager::getInstance().load(
+        "Sphere", "D:\\Eigene Daten\\Dokumente\\3D Modelle\\monkey.obj");
+  }
+  catch (std::exception const & exception)
+  {
+    std::cout << exception.what() << std::endl;
+    return false;
+  }
+  catch (...)
+  {
+    std::cout << "Unknown exception in Init()." << std::endl;
+    return false;
+  }
+
   // plane
   MeshPtr meshPlane = MeshManager::getInstance().getPlane();
   SceneObject * floor = new SceneObject("Floor");
+  PBRMaterialPtr pMaterial = PBRMaterialPtr(new PBRMaterial);
   floor->addComponent(new MeshRenderer(meshPlane, pMaterial));
+  pRoot->addChild(floor);
 
+  // spheres
+  int numRows = 7;
+  int numColumns = 7;
+  float spacing = 2.5;
+
+  for (int row = 0; row < numRows; ++row)
+  {
+    for (int col = 0; col < numColumns; ++col)
+    {
+      pMaterial = PBRMaterialPtr(new PBRMaterial);
+      pMaterial->setAlbedo(1.0f, 0.0f, 0.0f);
+      pMaterial->setMetallic((float)row / (float)numRows);
+      pMaterial->setRoughness(
+          glm::clamp((float)col / (float)numColumns, 0.05f, 1.0f));
+
+      SceneObject * pSphere = new SceneObject("Sphere");
+      pSphere->addComponent(new MeshRenderer(meshSphere, pMaterial));
+      pSphere->getTransform()->setPosition(
+          glm::vec3((float)(col - (numColumns / 2)) * spacing,
+                    (float)(row - (numRows / 2)) * spacing, 0.0f));
+
+      pRoot->addChild(pSphere);
+    }
+  }
 
   // camera
   SceneObject * pCameraObj = new SceneObject("Camera");
@@ -84,11 +131,7 @@ bool initGL(int width, int height)
   pCameraObj->getTransform()->lookAt(glm::vec3(0.0f, 0.0f, -5.0f),
                                      glm::vec3(0.0f, 0.0f, 0.0f),
                                      glm::vec3(0.0f, 1.0f, 0.0f));
-  // pCameraObj->getTransform()->setPosition(glm::vec3(0.0f, 0.0f, -10.0f));
-  // pCameraObj->getTransform()->setRotation(10.0f, glm::vec3(1.0f, 0.0f,
-  // 0.0f));
   pRoot->addChild(pCameraObj);
-
 
   // lights
   SceneObject * pDirectionalLight = new SceneObject("DirectionalLight");
@@ -96,8 +139,6 @@ bool initGL(int width, int height)
   pDirectionalLight->getComponent<Light>()->setIntensity(10.0f);
   pDirectionalLight->getTransform()->rotate(45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
   pRoot->addChild(pDirectionalLight);
-  
-
 
   CHECKGLERROR();
   return true;
@@ -117,8 +158,8 @@ int main()
   }
 
   // Create a windowed mode window and its OpenGL context.
-  int const width = 1200;
-  int const height = 800;
+  int const width = 1600;
+  int const height = 1000;
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
@@ -131,6 +172,7 @@ int main()
     exit(EXIT_FAILURE);
   }
   glfwSetFramebufferSizeCallback(window, resizeCallback);
+  InputManager::getInstance().init(window);
   glfwMakeContextCurrent(window);
   glfwSwapInterval(0);
 
