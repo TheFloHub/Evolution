@@ -10,7 +10,7 @@
 #include <gl/glew.h>
 #include <vector>
 
-namespace G3d
+namespace g3d
 {
 
 class FrameBufferObject
@@ -49,4 +49,4 @@ private:
   unsigned int mHeight;
 };
 
-} // namespace G3d
+} // namespace g3d

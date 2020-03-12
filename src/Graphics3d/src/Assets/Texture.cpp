@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-G3d::Texture::Texture(std::string const & textureFileName)
+g3d::Texture::Texture(std::string const & textureFileName)
     : mTextureHandle(0), mWidth(0), mHeight(0), mInternalFormat(9999)
 {
   int width = 0;
@@ -64,7 +64,7 @@ G3d::Texture::Texture(std::string const & textureFileName)
   stbi_image_free(image);
 }
 
-G3d::Texture::Texture(unsigned int width, unsigned int height,
+g3d::Texture::Texture(unsigned int width, unsigned int height,
                       unsigned int channels,
                       std::vector<unsigned char> const & data)
     : mTextureHandle(0), mWidth(width), mHeight(height), mInternalFormat(9999)
@@ -102,7 +102,7 @@ G3d::Texture::Texture(unsigned int width, unsigned int height,
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-G3d::Texture::Texture(unsigned int width, unsigned int height,
+g3d::Texture::Texture(unsigned int width, unsigned int height,
                       unsigned int channels, std::vector<float> const & data)
     : mTextureHandle(0), mWidth(width), mHeight(height), mInternalFormat(9999)
 {
@@ -146,7 +146,7 @@ G3d::Texture::Texture(unsigned int width, unsigned int height,
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-G3d::Texture::Texture(unsigned int width, unsigned int height,
+g3d::Texture::Texture(unsigned int width, unsigned int height,
                       GLenum internalFormat)
     : mTextureHandle(0), mWidth(width), mHeight(height),
       mInternalFormat(internalFormat)
@@ -166,15 +166,15 @@ G3d::Texture::Texture(unsigned int width, unsigned int height,
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-G3d::Texture::~Texture()
+g3d::Texture::~Texture()
 {
   if (mTextureHandle != 0)
     glDeleteTextures(1, &mTextureHandle);
 }
 
-void G3d::Texture::use() const { glBindTexture(GL_TEXTURE_2D, mTextureHandle); }
+void g3d::Texture::use() const { glBindTexture(GL_TEXTURE_2D, mTextureHandle); }
 
-void G3d::Texture::repeat()
+void g3d::Texture::repeat()
 {
   glBindTexture(GL_TEXTURE_2D, mTextureHandle);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -182,7 +182,7 @@ void G3d::Texture::repeat()
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void G3d::Texture::mirroredRepeat()
+void g3d::Texture::mirroredRepeat()
 {
   glBindTexture(GL_TEXTURE_2D, mTextureHandle);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
@@ -190,7 +190,7 @@ void G3d::Texture::mirroredRepeat()
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void G3d::Texture::clampToBorder()
+void g3d::Texture::clampToBorder()
 {
   glBindTexture(GL_TEXTURE_2D, mTextureHandle);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -200,7 +200,7 @@ void G3d::Texture::clampToBorder()
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void G3d::Texture::clampToEdge()
+void g3d::Texture::clampToEdge()
 {
   glBindTexture(GL_TEXTURE_2D, mTextureHandle);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -208,7 +208,7 @@ void G3d::Texture::clampToEdge()
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void G3d::Texture::lowQuality()
+void g3d::Texture::lowQuality()
 {
   glBindTexture(GL_TEXTURE_2D, mTextureHandle);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -216,7 +216,7 @@ void G3d::Texture::lowQuality()
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void G3d::Texture::mediumQuality()
+void g3d::Texture::mediumQuality()
 {
   glBindTexture(GL_TEXTURE_2D, mTextureHandle);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
@@ -225,7 +225,7 @@ void G3d::Texture::mediumQuality()
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void G3d::Texture::highQuality()
+void g3d::Texture::highQuality()
 {
   glBindTexture(GL_TEXTURE_2D, mTextureHandle);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
@@ -234,8 +234,8 @@ void G3d::Texture::highQuality()
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-unsigned int G3d::Texture::getWidth() const { return mWidth; }
+unsigned int g3d::Texture::getWidth() const { return mWidth; }
 
-unsigned int G3d::Texture::getHeight() const { return mHeight; }
+unsigned int g3d::Texture::getHeight() const { return mHeight; }
 
-GLuint G3d::Texture::getHandle() const { return mTextureHandle; }
+GLuint g3d::Texture::getHandle() const { return mTextureHandle; }

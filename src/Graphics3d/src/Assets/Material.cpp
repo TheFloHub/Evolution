@@ -1,23 +1,23 @@
 #include "Graphics3d/Assets/Material.h"
 #include <Graphics3d/Assets/Shader.h>
 
-G3d::Material::Material(ShaderCPtr pShader) : 
+g3d::Material::Material(ShaderCPtr pShader) : 
 mpShader(pShader)
 {
 
 }
 
-G3d::Material::~Material()
+g3d::Material::~Material()
 {
 
 }
 
-void G3d::Material::use() const
+void g3d::Material::use() const
 {
 	mpShader->use();
 }
 
-G3d::ShaderCPtr G3d::Material::getShader() const
+g3d::ShaderCPtr g3d::Material::getShader() const
 {
 	return mpShader;
 }

@@ -15,7 +15,7 @@
 #include <map>
 #include <string>
 
-namespace G3d
+namespace g3d
 {
 
 class Shader
@@ -67,4 +67,4 @@ private:
   static std::map<std::string, glm::mat4> GlobalMat4Parameters;
 };
 
-} // namespace G3d
+} // namespace g3d

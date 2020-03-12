@@ -4,7 +4,7 @@
 #include <Graphics3d/GlInfo.h>
 #include <Graphics3d/Rendering/FrameBufferObject.h>
 
-G3d::RenderPath::RenderPath(ShaderCPtr pShader,
+g3d::RenderPath::RenderPath(ShaderCPtr pShader,
                             FrameBufferObject * pFrameBuffer)
     : m180Rotation(-1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
                    -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f),
@@ -12,4 +12,4 @@ G3d::RenderPath::RenderPath(ShaderCPtr pShader,
 {
 }
 
-G3d::RenderPath::~RenderPath() {}
+g3d::RenderPath::~RenderPath() {}

@@ -10,7 +10,7 @@
 #include "Component.h"
 #include <glm/glm.hpp>
 
-namespace G3d
+namespace g3d
 {
 
 class Camera : public Component
@@ -54,4 +54,4 @@ private:
   Camera & operator=(Camera const &) = delete;
 };
 
-} // namespace G3d
+} // namespace g3d

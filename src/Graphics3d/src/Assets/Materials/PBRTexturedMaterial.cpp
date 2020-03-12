@@ -6,7 +6,7 @@
 #pragma warning(disable : 4201)
 #include <glm/gtc/type_ptr.hpp>
 
-G3d::PBRTexturedMaterial::PBRTexturedMaterial()
+g3d::PBRTexturedMaterial::PBRTexturedMaterial()
     : Material(ShaderManager::getInstance().getPBRTextured()),
       mpAlbedoTexture(TextureManager::getInstance().getRGB255()),
       mpMetallicTexture(TextureManager::getInstance().getL0()),
@@ -25,9 +25,9 @@ G3d::PBRTexturedMaterial::PBRTexturedMaterial()
   mTilingLoc = mpShader->getUniformLocation("tiling");
 }
 
-G3d::PBRTexturedMaterial::~PBRTexturedMaterial() {}
+g3d::PBRTexturedMaterial::~PBRTexturedMaterial() {}
 
-void G3d::PBRTexturedMaterial::use() const
+void g3d::PBRTexturedMaterial::use() const
 {
   Material::use(); // enables shader program
   glUniformMatrix4fv(
@@ -46,22 +46,22 @@ void G3d::PBRTexturedMaterial::use() const
   mpNormalTexture->use();
 }
 
-void G3d::PBRTexturedMaterial::setAlbedo(TextureCPtr pTexture)
+void g3d::PBRTexturedMaterial::setAlbedo(TextureCPtr pTexture)
 {
   mpAlbedoTexture = pTexture;
 }
 
-void G3d::PBRTexturedMaterial::setMetallic(TextureCPtr pTexture)
+void g3d::PBRTexturedMaterial::setMetallic(TextureCPtr pTexture)
 {
   mpMetallicTexture = pTexture;
 }
 
-void G3d::PBRTexturedMaterial::setRoughness(TextureCPtr pTexture)
+void g3d::PBRTexturedMaterial::setRoughness(TextureCPtr pTexture)
 {
   mpRoughnessTexture = pTexture;
 }
 
-void G3d::PBRTexturedMaterial::setNormal(TextureCPtr pTexture)
+void g3d::PBRTexturedMaterial::setNormal(TextureCPtr pTexture)
 {
   mpNormalTexture = pTexture;
 }

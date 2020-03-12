@@ -10,7 +10,7 @@
 #include "Graphics3d/Assets/Material.h"
 #include <gl/glew.h>
 
-namespace G3d
+namespace g3d
 {
 
 class DiffuseMaterial : public Material
@@ -57,4 +57,4 @@ private:
 
 typedef std::shared_ptr<DiffuseMaterial> DiffuseMaterialPtr;
 typedef std::shared_ptr<DiffuseMaterial const> DiffuseMaterialCPtr;
-} // namespace G3d
+} // namespace g3d

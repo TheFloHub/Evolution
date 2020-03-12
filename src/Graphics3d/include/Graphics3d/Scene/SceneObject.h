@@ -23,7 +23,7 @@
 #include <typeinfo>
 #include <vector>
 
-namespace G3d
+namespace g3d
 {
 
 // forward declarations
@@ -150,7 +150,7 @@ private:
    * Removes the child from this scene object committing ownership to the
    * caller. Only call this, if you know what you're doing.
    */
-  void G3d::SceneObject::removeChild(SceneObject * child);
+  void g3d::SceneObject::removeChild(SceneObject * child);
 
   /** The name of this scene object. */
   std::string mName;
@@ -178,4 +178,4 @@ private:
   bool mIsEnabled;
 };
 
-} // namespace G3d
+} // namespace g3d

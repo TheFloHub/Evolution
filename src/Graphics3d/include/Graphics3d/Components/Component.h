@@ -8,7 +8,7 @@
 
 #pragma once
 
-namespace G3d
+namespace g3d
 {
 
 // forward declarations
@@ -55,4 +55,4 @@ private:
   Component & operator=(Component const &) = delete;
 };
 
-} // namespace G3d
+} // namespace g3d

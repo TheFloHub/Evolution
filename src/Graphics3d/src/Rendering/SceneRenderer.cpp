@@ -3,9 +3,9 @@
 #include "Graphics3d/Components/Light.h"
 #include "Graphics3d/Scene/SceneObject.h"
 
-using namespace G3d;
+using namespace g3d;
 
-G3d::SceneRenderer::SceneRenderer(unsigned int width, unsigned int height)
+g3d::SceneRenderer::SceneRenderer(unsigned int width, unsigned int height)
     : mWidth(width), mHeight(height), mGraphicsBufferPath(width, height),
       mShadowMapPath(1024, 1024), mDeferredShadingPath(width, height),
       mFinalShadingPass(width, height)
@@ -17,9 +17,9 @@ G3d::SceneRenderer::SceneRenderer(unsigned int width, unsigned int height)
   mFinalShadingPass.setInput(mDeferredShadingPath.getOutputBuffer());
 }
 
-G3d::SceneRenderer::~SceneRenderer() {}
+g3d::SceneRenderer::~SceneRenderer() {}
 
-void G3d::SceneRenderer::setImageSize(unsigned int width, unsigned int height)
+void g3d::SceneRenderer::setImageSize(unsigned int width, unsigned int height)
 {
   if (mWidth != width || mHeight != height)
   {
@@ -28,7 +28,7 @@ void G3d::SceneRenderer::setImageSize(unsigned int width, unsigned int height)
   }
 }
 
-void G3d::SceneRenderer::render(SceneObject const * pRoot)
+void g3d::SceneRenderer::render(SceneObject const * pRoot)
 {
   std::vector<SceneObject const *> sceneObjects;
   std::vector<Light const *> lights;
@@ -58,7 +58,7 @@ void G3d::SceneRenderer::render(SceneObject const * pRoot)
   mFinalShadingPass.render();
 }
 
-void G3d::SceneRenderer::traverseGraph(
+void g3d::SceneRenderer::traverseGraph(
     SceneObject const * pCurrentNode,
     std::vector<SceneObject const *> & sceneObjects,
     std::vector<Light const *> & lights,

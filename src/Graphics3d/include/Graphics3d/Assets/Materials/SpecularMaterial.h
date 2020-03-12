@@ -10,7 +10,7 @@
 #include "Graphics3d/Assets/Material.h"
 #include <gl/glew.h>
 
-namespace G3d
+namespace g3d
 {
 
 class SpecularMaterial : public Material
@@ -63,4 +63,4 @@ private:
 
 typedef std::shared_ptr<SpecularMaterial> SpecularMaterialPtr;
 typedef std::shared_ptr<SpecularMaterial const> SpecularMaterialCPtr;
-} // namespace G3d
+} // namespace g3d

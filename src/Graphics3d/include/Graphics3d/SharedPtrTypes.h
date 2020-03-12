@@ -2,14 +2,14 @@
  * @author Florian Feuerstein
  * @date 03.08.2016
  *
- * Forward declarations and typedefs of G3d lib.
+ * Forward declarations and typedefs of g3d lib.
  */
 
 #pragma once
 
 #include <memory>
 
-namespace G3d
+namespace g3d
 {
 
 class Mesh;
@@ -28,4 +28,4 @@ class Texture;
 typedef std::shared_ptr<Texture> TexturePtr;
 typedef std::shared_ptr<Texture const> TextureCPtr;
 
-} // namespace G3d
+} // namespace g3d

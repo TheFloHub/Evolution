@@ -9,7 +9,7 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 
-namespace G3d
+namespace g3d
 {
 enum MouseInput
 {
@@ -173,4 +173,4 @@ private:
   double mDiffY;
 };
 
-} // namespace G3d
+} // namespace g3d

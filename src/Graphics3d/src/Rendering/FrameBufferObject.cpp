@@ -3,7 +3,7 @@
 #include <Graphics3d/GlInfo.h>
 #include <iostream>
 
-G3d::FrameBufferObject::FrameBufferObject(
+g3d::FrameBufferObject::FrameBufferObject(
     unsigned int width, unsigned int height, GLenum depthFormat,
     GLenum colorFormat1, GLenum colorFormat2, GLenum colorFormat3)
     : mColorAttachments(), mDepthComponent(nullptr), mFboHandle(0),
@@ -62,18 +62,18 @@ G3d::FrameBufferObject::FrameBufferObject(
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-G3d::FrameBufferObject::~FrameBufferObject()
+g3d::FrameBufferObject::~FrameBufferObject()
 {
   if (mFboHandle != 0)
     glDeleteFramebuffers(1, &mFboHandle);
 }
 
-void G3d::FrameBufferObject::use() const
+void g3d::FrameBufferObject::use() const
 {
   glBindFramebuffer(GL_FRAMEBUFFER, mFboHandle);
 }
 
-G3d::TexturePtr G3d::FrameBufferObject::getTexture(size_t index)
+g3d::TexturePtr g3d::FrameBufferObject::getTexture(size_t index)
 {
   if (index < mColorAttachments.size())
   {
@@ -82,11 +82,11 @@ G3d::TexturePtr G3d::FrameBufferObject::getTexture(size_t index)
   return nullptr;
 }
 
-G3d::TexturePtr G3d::FrameBufferObject::getDepthComponent()
+g3d::TexturePtr g3d::FrameBufferObject::getDepthComponent()
 {
   return mDepthComponent;
 }
 
-unsigned int G3d::FrameBufferObject::getWidth() const { return mWidth; }
+unsigned int g3d::FrameBufferObject::getWidth() const { return mWidth; }
 
-unsigned int G3d::FrameBufferObject::getHeight() const { return mHeight; }
+unsigned int g3d::FrameBufferObject::getHeight() const { return mHeight; }

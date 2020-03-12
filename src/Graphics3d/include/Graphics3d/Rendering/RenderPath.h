@@ -12,7 +12,7 @@
 #include <glm/glm.hpp>
 #include <memory>
 
-namespace G3d
+namespace g3d
 {
 // TODO: do we really need this class?
 class RenderPath
@@ -34,4 +34,4 @@ protected:
   std::unique_ptr<FrameBufferObject> mpFrameBuffer;
 };
 
-} // namespace G3d
+} // namespace g3d

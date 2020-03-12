@@ -11,7 +11,7 @@
 #include <map>
 #include <string>
 
-namespace G3d
+namespace g3d
 {
 
 class TextureManager
@@ -59,4 +59,4 @@ private:
   std::map<std::string, TexturePtr> mTextureMap;
 };
 
-} // namespace G3d
+} // namespace g3d

@@ -6,22 +6,22 @@
 #include <streambuf>
 
 
-G3d::ShaderManager& G3d::ShaderManager::getInstance()
+g3d::ShaderManager& g3d::ShaderManager::getInstance()
 {
 	static ShaderManager instance;
 	return instance;
 }
 
-G3d::ShaderManager::ShaderManager() :
+g3d::ShaderManager::ShaderManager() :
 mShaderMap()
 {
 }
 
-G3d::ShaderManager::~ShaderManager()
+g3d::ShaderManager::~ShaderManager()
 {
 }
 
-G3d::ShaderPtr G3d::ShaderManager::loadFromFile(
+g3d::ShaderPtr g3d::ShaderManager::loadFromFile(
 	std::string const& shaderName, 
 	std::string const& vertexShaderFileName,
 	std::string const& fragmentShaderFileName)
@@ -47,7 +47,7 @@ G3d::ShaderPtr G3d::ShaderManager::loadFromFile(
 	return (mShaderMap.insert(std::make_pair(shaderName, ShaderPtr(new Shader(vertexShader, fragmentShader))))).first->second;
 }
 
-G3d::ShaderPtr G3d::ShaderManager::get(std::string const& shaderName) const
+g3d::ShaderPtr g3d::ShaderManager::get(std::string const& shaderName) const
 {
 	auto iter = mShaderMap.find(shaderName);
 	if (iter != mShaderMap.end())
@@ -57,38 +57,38 @@ G3d::ShaderPtr G3d::ShaderManager::get(std::string const& shaderName) const
 	return ShaderPtr();
 }
 
-G3d::ShaderPtr G3d::ShaderManager::getPBRStandard() const
+g3d::ShaderPtr g3d::ShaderManager::getPBRStandard() const
 {
 	return get("PBRStandard"); 
 }
 
-G3d::ShaderPtr G3d::ShaderManager::getPBRTextured() const
+g3d::ShaderPtr g3d::ShaderManager::getPBRTextured() const
 {
 	return get("PBRTextured");
 }
 
-G3d::ShaderPtr G3d::ShaderManager::getDiffuse() const
+g3d::ShaderPtr g3d::ShaderManager::getDiffuse() const
 {
 	return get("Diffuse");
 }
 
-G3d::ShaderPtr G3d::ShaderManager::getSpecular() const
+g3d::ShaderPtr g3d::ShaderManager::getSpecular() const
 {
 	return get("Specular");
 }
 
-G3d::ShaderPtr G3d::ShaderManager::getDefaultDepth() const
+g3d::ShaderPtr g3d::ShaderManager::getDefaultDepth() const
 {
 	return get("DefaultDepth");
 }
 
-G3d::ShaderPtr G3d::ShaderManager::getTerrainDepth() const
+g3d::ShaderPtr g3d::ShaderManager::getTerrainDepth() const
 { return nullptr; }
 
-G3d::ShaderPtr G3d::ShaderManager::getTerrain() const
+g3d::ShaderPtr g3d::ShaderManager::getTerrain() const
 { return nullptr; }
 
-bool G3d::ShaderManager::initStandardShader()
+bool g3d::ShaderManager::initStandardShader()
 {
 	std::string baseHome("D:\\Repositories\\Evolution\\src\\Graphics3d\\src\\Resources\\Shader\\");
 	std::string baseWork("D:\\Code\\Evolution\\src\\Graphics3d\\src\\Resources\\Shader\\");

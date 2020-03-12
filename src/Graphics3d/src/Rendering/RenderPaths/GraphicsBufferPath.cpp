@@ -10,7 +10,7 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-G3d::GraphicsBufferPath::GraphicsBufferPath(unsigned int width,
+g3d::GraphicsBufferPath::GraphicsBufferPath(unsigned int width,
                                             unsigned int height)
     : RenderPath(nullptr,
                  new FrameBufferObject(width, height,
@@ -20,9 +20,9 @@ G3d::GraphicsBufferPath::GraphicsBufferPath(unsigned int width,
 {
 }
 
-G3d::GraphicsBufferPath::~GraphicsBufferPath() {}
+g3d::GraphicsBufferPath::~GraphicsBufferPath() {}
 
-void G3d::GraphicsBufferPath::render(
+void g3d::GraphicsBufferPath::render(
     Camera const * pCamera, std::vector<SceneObject const *> sceneObjects)
 {
   mpFrameBuffer->use();
@@ -53,17 +53,17 @@ void G3d::GraphicsBufferPath::render(
   }
 }
 
-G3d::TexturePtr G3d::GraphicsBufferPath::getDepthBuffer()
+g3d::TexturePtr g3d::GraphicsBufferPath::getDepthBuffer()
 {
   return mpFrameBuffer->getDepthComponent();
 }
 
-G3d::TexturePtr G3d::GraphicsBufferPath::getNormalBuffer()
+g3d::TexturePtr g3d::GraphicsBufferPath::getNormalBuffer()
 {
   return mpFrameBuffer->getTexture(0);
 }
 
-G3d::TexturePtr G3d::GraphicsBufferPath::getAlbedoBuffer()
+g3d::TexturePtr g3d::GraphicsBufferPath::getAlbedoBuffer()
 {
   return mpFrameBuffer->getTexture(1);
 }

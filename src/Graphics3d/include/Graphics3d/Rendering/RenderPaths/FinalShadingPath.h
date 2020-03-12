@@ -9,7 +9,7 @@
 #include <Graphics3d/Rendering/RenderPath.h>
 #include <Graphics3d/SharedPtrTypes.h>
 
-namespace G3d
+namespace g3d
 {
 
 class FinalShadingPass : public RenderPath
@@ -35,4 +35,4 @@ protected:
   TextureCPtr mpInput;
 };
 
-} // namespace G3d
+} // namespace g3d

@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-namespace G3d
+namespace g3d
 {
 
 class Mesh
@@ -74,4 +74,4 @@ private:
   unsigned int mNumberOfElementsToDraw;
 };
 
-} // namespace G3d
+} // namespace g3d

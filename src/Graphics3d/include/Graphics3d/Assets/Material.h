@@ -11,7 +11,7 @@
 
 #include <Graphics3d/SharedPtrTypes.h>
 
-namespace G3d
+namespace g3d
 {
 
 class Material
@@ -34,4 +34,4 @@ private:
   Material & operator=(Material const &) = delete;
 };
 
-} // namespace G3d
+} // namespace g3d

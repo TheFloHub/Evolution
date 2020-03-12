@@ -10,7 +10,7 @@
 #include "Component.h"
 #include <Graphics3d/SharedPtrTypes.h>
 
-namespace G3d
+namespace g3d
 {
 
 class MeshRenderer : public Component
@@ -44,4 +44,4 @@ private:
   MeshRenderer & operator=(MeshRenderer const &) = delete;
 };
 
-} // namespace G3d
+} // namespace g3d

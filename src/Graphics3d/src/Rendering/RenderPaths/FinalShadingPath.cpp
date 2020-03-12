@@ -5,7 +5,7 @@
 #include <Graphics3d/Assets/ShaderManager.h>
 #include <Graphics3d/Assets/Texture.h>
 
-G3d::FinalShadingPass::FinalShadingPass(unsigned int width, unsigned int height)
+g3d::FinalShadingPass::FinalShadingPass(unsigned int width, unsigned int height)
     : RenderPath(ShaderManager::getInstance().get("FinalShading"), nullptr),
       mWidth(width), mHeight(height), mpInput()
 {
@@ -13,9 +13,9 @@ G3d::FinalShadingPass::FinalShadingPass(unsigned int width, unsigned int height)
   glUniform1i(mpShader->getUniformLocation("inputTexture"), 0);
 }
 
-G3d::FinalShadingPass::~FinalShadingPass() {}
+g3d::FinalShadingPass::~FinalShadingPass() {}
 
-void G3d::FinalShadingPass::render()
+void g3d::FinalShadingPass::render()
 {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glViewport(0, 0, mWidth, mHeight);
@@ -33,7 +33,7 @@ void G3d::FinalShadingPass::render()
   glEnable(GL_DEPTH_TEST);
 }
 
-void G3d::FinalShadingPass::setInput(TextureCPtr pTexture)
+void g3d::FinalShadingPass::setInput(TextureCPtr pTexture)
 {
   mpInput = pTexture;
 }

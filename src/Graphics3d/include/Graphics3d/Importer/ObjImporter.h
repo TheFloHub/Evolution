@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace G3d
+namespace g3d
 {
 
 class ObjImporter
@@ -164,4 +164,4 @@ private:
   std::vector<std::vector<Point3f>> mCalculatedNormals;
 };
 
-} // namespace G3d
+} // namespace g3d

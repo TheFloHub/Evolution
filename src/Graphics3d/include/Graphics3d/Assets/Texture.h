@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace G3d
+namespace g3d
 {
 
 // TODO: make this base class and create 2dtexture, cubemap, rendertexture?!
@@ -82,4 +82,4 @@ protected:
   GLenum mInternalFormat;
 };
 
-} // namespace G3d
+} // namespace g3d

@@ -11,7 +11,7 @@
 #include <map>
 #include <string>
 
-namespace G3d
+namespace g3d
 {
 
 class ShaderManager
@@ -53,4 +53,4 @@ private:
   std::map<std::string, ShaderPtr> mShaderMap;
 };
 
-} // namespace G3d
+} // namespace g3d

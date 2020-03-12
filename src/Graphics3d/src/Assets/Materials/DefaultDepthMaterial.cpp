@@ -4,16 +4,16 @@
 #pragma warning(disable : 4201)
 #include <glm/gtc/type_ptr.hpp>
 
-G3d::DefaultDepthMaterial::DefaultDepthMaterial()
+g3d::DefaultDepthMaterial::DefaultDepthMaterial()
     : Material(ShaderManager::getInstance().getDefaultDepth()), mMvpMatrixLoc(0)
 {
   mpShader->use();
   mMvpMatrixLoc = mpShader->getUniformLocation("modelViewProjectionMatrix");
 }
 
-G3d::DefaultDepthMaterial::~DefaultDepthMaterial() {}
+g3d::DefaultDepthMaterial::~DefaultDepthMaterial() {}
 
-void G3d::DefaultDepthMaterial::use() const
+void g3d::DefaultDepthMaterial::use() const
 {
   Material::use(); // enables shader program
   glUniformMatrix4fv(

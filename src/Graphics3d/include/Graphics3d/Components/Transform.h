@@ -14,7 +14,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-namespace G3d
+namespace g3d
 {
 
 class Transform : public Component
@@ -70,4 +70,4 @@ private:
   Transform & operator=(Transform const &) = delete;
 };
 
-} // namespace G3d
+} // namespace g3d

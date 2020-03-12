@@ -6,7 +6,7 @@
 #pragma warning(disable : 4201)
 #include <glm/gtc/type_ptr.hpp>
 
-G3d::TerrainMaterial::TerrainMaterial()
+g3d::TerrainMaterial::TerrainMaterial()
     : Material(ShaderManager::getInstance().getTerrain()),
       mpHeightMap(
           TextureManager::getInstance().getRGB255()), // TODO: Luminence0 ?
@@ -22,9 +22,9 @@ G3d::TerrainMaterial::TerrainMaterial()
   mNormalMatrixLoc = glGetUniformLocation(program, "normalMatrix");
 }
 
-G3d::TerrainMaterial::~TerrainMaterial() {}
+g3d::TerrainMaterial::~TerrainMaterial() {}
 
-void G3d::TerrainMaterial::use() const
+void g3d::TerrainMaterial::use() const
 {
   Material::use(); // enables shader program
   glUniformMatrix4fv(
@@ -38,7 +38,7 @@ void G3d::TerrainMaterial::use() const
   mpNoise->use();
 }
 
-void G3d::TerrainMaterial::setHeightMap(TextureCPtr pHeightMap)
+void g3d::TerrainMaterial::setHeightMap(TextureCPtr pHeightMap)
 {
   mpHeightMap = pHeightMap;
 }

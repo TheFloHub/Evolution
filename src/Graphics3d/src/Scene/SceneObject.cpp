@@ -4,9 +4,9 @@
 #include "Graphics3d/Components/Transform.h"
 #include <algorithm>
 
-using namespace G3d;
+using namespace g3d;
 
-G3d::SceneObject::SceneObject(std::string const & name)
+g3d::SceneObject::SceneObject(std::string const & name)
     : mName(name), mpParent(nullptr), mChildren(), mpTransform(new Transform),
       mComponents(), mIsEnabled(true)
 {
@@ -15,7 +15,7 @@ G3d::SceneObject::SceneObject(std::string const & name)
   mpTransform->mpSceneObject = this;
 }
 
-G3d::SceneObject::SceneObject(std::string const & name, Transform * pTransform)
+g3d::SceneObject::SceneObject(std::string const & name, Transform * pTransform)
     : mName(name), mpParent(nullptr), mChildren(), mpTransform(pTransform),
       mComponents(), mIsEnabled(true)
 {
@@ -24,7 +24,7 @@ G3d::SceneObject::SceneObject(std::string const & name, Transform * pTransform)
   mpTransform->mpSceneObject = this;
 }
 
-G3d::SceneObject::~SceneObject()
+g3d::SceneObject::~SceneObject()
 {
   if (mpParent != nullptr)
   {
@@ -46,7 +46,7 @@ G3d::SceneObject::~SceneObject()
   mChildren.clear();
 }
 
-G3d::SceneObject * G3d::SceneObject::clone() const
+g3d::SceneObject * g3d::SceneObject::clone() const
 {
   SceneObject * pSceneObject = new SceneObject(
       mName,
@@ -63,7 +63,7 @@ G3d::SceneObject * G3d::SceneObject::clone() const
   return pSceneObject;
 }
 
-bool G3d::SceneObject::addComponent(Component * pComponent)
+bool g3d::SceneObject::addComponent(Component * pComponent)
 {
   // don't add if null or if there already exists an owner
   if (pComponent == nullptr || pComponent->mpSceneObject != nullptr)
@@ -79,16 +79,16 @@ bool G3d::SceneObject::addComponent(Component * pComponent)
   return infoPair.second;
 }
 
-void G3d::SceneObject::removeComponent(Component * pComponent)
+void g3d::SceneObject::removeComponent(Component * pComponent)
 {
   mComponents.erase(typeid(*pComponent).hash_code());
 }
 
-Transform * G3d::SceneObject::getTransform() { return mpTransform; }
+Transform * g3d::SceneObject::getTransform() { return mpTransform; }
 
-Transform const * G3d::SceneObject::getTransform() const { return mpTransform; }
+Transform const * g3d::SceneObject::getTransform() const { return mpTransform; }
 
-bool G3d::SceneObject::addChild(SceneObject * pChild)
+bool g3d::SceneObject::addChild(SceneObject * pChild)
 {
   if (pChild == nullptr || pChild == this || pChild->mpParent == this)
     return false;
@@ -112,7 +112,7 @@ bool G3d::SceneObject::addChild(SceneObject * pChild)
   return true;
 }
 
-void G3d::SceneObject::removeChild(SceneObject * child)
+void g3d::SceneObject::removeChild(SceneObject * child)
 {
   std::vector<SceneObject *>::iterator iter = mChildren.begin();
   std::vector<SceneObject *>::iterator last = mChildren.end();
@@ -127,7 +127,7 @@ void G3d::SceneObject::removeChild(SceneObject * child)
   }
 }
 
-void G3d::SceneObject::update(double deltaTime)
+void g3d::SceneObject::update(double deltaTime)
 {
   // HINT: no need to update transform
   for (auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
@@ -146,7 +146,7 @@ void G3d::SceneObject::update(double deltaTime)
   }
 }
 
-void G3d::SceneObject::render() const
+void g3d::SceneObject::render() const
 {
   // HINT: no need to render transform
   for (auto iter = mComponents.cbegin(); iter != mComponents.cend(); ++iter)
@@ -158,7 +158,7 @@ void G3d::SceneObject::render() const
   }
 }
 
-void G3d::SceneObject::renderDepth() const
+void g3d::SceneObject::renderDepth() const
 {
   // HINT: no need to render transform
   for (auto iter = mComponents.cbegin(); iter != mComponents.cend(); ++iter)
@@ -170,7 +170,7 @@ void G3d::SceneObject::renderDepth() const
   }
 }
 
-bool G3d::SceneObject::isNodeDescendant(SceneObject const * pNode) const
+bool g3d::SceneObject::isNodeDescendant(SceneObject const * pNode) const
 {
   if (pNode == nullptr)
     return false;
@@ -180,28 +180,28 @@ bool G3d::SceneObject::isNodeDescendant(SceneObject const * pNode) const
   return pCurrentNode == this;
 }
 
-size_t G3d::SceneObject::getNumberOfChildren() const
+size_t g3d::SceneObject::getNumberOfChildren() const
 {
   return mChildren.size();
 }
 
-SceneObject * G3d::SceneObject::getParent() { return mpParent; }
+SceneObject * g3d::SceneObject::getParent() { return mpParent; }
 
-SceneObject const * G3d::SceneObject::getParent() const { return mpParent; }
+SceneObject const * g3d::SceneObject::getParent() const { return mpParent; }
 
-bool G3d::SceneObject::isLeafNode() const { return mChildren.empty(); }
+bool g3d::SceneObject::isLeafNode() const { return mChildren.empty(); }
 
-SceneObject * G3d::SceneObject::getChild(size_t index)
+SceneObject * g3d::SceneObject::getChild(size_t index)
 {
   return mChildren[index];
 }
 
-SceneObject const * G3d::SceneObject::getChild(size_t index) const
+SceneObject const * g3d::SceneObject::getChild(size_t index) const
 {
   return mChildren[index];
 }
 
-SceneObject * G3d::SceneObject::getChild(std::string const & name)
+SceneObject * g3d::SceneObject::getChild(std::string const & name)
 {
   auto iter = mChildren.begin();
   auto end = mChildren.end();
@@ -216,7 +216,7 @@ SceneObject * G3d::SceneObject::getChild(std::string const & name)
   return nullptr;
 }
 
-SceneObject const * G3d::SceneObject::getChild(std::string const & name) const
+SceneObject const * g3d::SceneObject::getChild(std::string const & name) const
 {
   auto iter = mChildren.cbegin();
   auto end = mChildren.cend();
@@ -231,8 +231,8 @@ SceneObject const * G3d::SceneObject::getChild(std::string const & name) const
   return nullptr;
 }
 
-void G3d::SceneObject::setEnabled(bool isEnabled) { mIsEnabled = isEnabled; }
+void g3d::SceneObject::setEnabled(bool isEnabled) { mIsEnabled = isEnabled; }
 
-bool G3d::SceneObject::isEnabled() const { return mIsEnabled; }
+bool g3d::SceneObject::isEnabled() const { return mIsEnabled; }
 
-std::string const & G3d::SceneObject::getName() const { return mName; }
+std::string const & g3d::SceneObject::getName() const { return mName; }

@@ -9,7 +9,7 @@
 #include <Graphics3d/SharedPtrTypes.h>
 #include <Graphics3d/rendering/RenderPath.h>
 
-namespace G3d
+namespace g3d
 {
 
 class Light;
@@ -33,4 +33,4 @@ protected:
   ShadowMapPass & operator=(ShadowMapPass const &) = delete;
 };
 
-} // namespace G3d
+} // namespace g3d

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-void G3d::GlInfo::checkGlErrorImpl(int line, const char * file)
+void g3d::GlInfo::checkGlErrorImpl(int line, const char * file)
 {
   GLenum error = glGetError();
   if (error != GL_NO_ERROR)
@@ -29,7 +29,7 @@ void G3d::GlInfo::checkGlErrorImpl(int line, const char * file)
   }
 }
 
-void G3d::GlInfo::checkFboErrorImpl(int line, const char * file)
+void g3d::GlInfo::checkFboErrorImpl(int line, const char * file)
 {
   GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
   if (status != GL_FRAMEBUFFER_COMPLETE_EXT)

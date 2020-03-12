@@ -4,17 +4,17 @@
 #include <iostream>
 #include <random>
 
-G3d::TextureManager & G3d::TextureManager::getInstance()
+g3d::TextureManager & g3d::TextureManager::getInstance()
 {
   static TextureManager instance;
   return instance;
 }
 
-G3d::TextureManager::TextureManager() : mTextureMap() {}
+g3d::TextureManager::TextureManager() : mTextureMap() {}
 
-G3d::TextureManager::~TextureManager() {}
+g3d::TextureManager::~TextureManager() {}
 
-G3d::TexturePtr G3d::TextureManager::load(std::string const & textureName,
+g3d::TexturePtr g3d::TextureManager::load(std::string const & textureName,
                                           std::string const & fileName)
 {
   TexturePtr pTexture = get(textureName);
@@ -29,7 +29,7 @@ G3d::TexturePtr G3d::TextureManager::load(std::string const & textureName,
       .first->second;
 }
 
-G3d::TexturePtr G3d::TextureManager::get(std::string const & textureName) const
+g3d::TexturePtr g3d::TextureManager::get(std::string const & textureName) const
 {
   std::map<std::string, TexturePtr>::const_iterator iter =
       mTextureMap.find(textureName);
@@ -40,43 +40,43 @@ G3d::TexturePtr G3d::TextureManager::get(std::string const & textureName) const
   return TexturePtr();
 }
 
-G3d::TexturePtr G3d::TextureManager::getRGB255() const { return get("RGB255"); }
+g3d::TexturePtr g3d::TextureManager::getRGB255() const { return get("RGB255"); }
 
-G3d::TexturePtr G3d::TextureManager::getR255G0B0() const
+g3d::TexturePtr g3d::TextureManager::getR255G0B0() const
 {
   return get("R255G0B0");
 }
 
-G3d::TexturePtr G3d::TextureManager::getRGBA255() const
+g3d::TexturePtr g3d::TextureManager::getRGBA255() const
 {
   return get("RGBA255");
 }
 
-G3d::TexturePtr G3d::TextureManager::getL255() const { return get("L255"); }
+g3d::TexturePtr g3d::TextureManager::getL255() const { return get("L255"); }
 
-G3d::TexturePtr G3d::TextureManager::getL0() const { return get("L0"); }
+g3d::TexturePtr g3d::TextureManager::getL0() const { return get("L0"); }
 
-G3d::TexturePtr G3d::TextureManager::getMinRoughness() const
+g3d::TexturePtr g3d::TextureManager::getMinRoughness() const
 {
   return get("MinRoughness");
 }
 
-G3d::TexturePtr G3d::TextureManager::getDefaultNormalMap() const
+g3d::TexturePtr g3d::TextureManager::getDefaultNormalMap() const
 {
   return get("DefaultNormalMap");
 }
 
-G3d::TexturePtr G3d::TextureManager::getDefaultHeightMap() const
+g3d::TexturePtr g3d::TextureManager::getDefaultHeightMap() const
 {
   return get("DefaultHeightMap");
 }
 
-G3d::TexturePtr G3d::TextureManager::getTerrainNoise() const
+g3d::TexturePtr g3d::TextureManager::getTerrainNoise() const
 {
   return get("TerrainNoise");
 }
 
-void G3d::TextureManager::initStandardTextures()
+void g3d::TextureManager::initStandardTextures()
 {
   // RGB255
   std::vector<unsigned char> data(4 * 4 * 3, 255);
@@ -125,7 +125,7 @@ void G3d::TextureManager::initStandardTextures()
   createTerrainNoise();
 }
 
-void G3d::TextureManager::createHeightMap()
+void g3d::TextureManager::createHeightMap()
 {
   std::vector<float> data;
   data.reserve(512 * 512);
@@ -154,7 +154,7 @@ void G3d::TextureManager::createHeightMap()
       "DefaultHeightMap", TexturePtr(new Texture(512, 512, 1, data))));
 }
 
-void G3d::TextureManager::createTerrainNoise()
+void g3d::TextureManager::createTerrainNoise()
 {
   unsigned int size = 512;
   std::vector<float> data;

@@ -10,15 +10,15 @@
 
 #include <iostream>
 
-G3d::CameraController::CameraController()
+g3d::CameraController::CameraController()
     : Component(), mMoveSpeed(2.0), mRotationSpeed(10.0), mRotationX(0.0),
       mRotationY(0.0)
 {
 }
 
-G3d::CameraController::~CameraController() {}
+g3d::CameraController::~CameraController() {}
 
-G3d::Component * G3d::CameraController::clone() const
+g3d::Component * g3d::CameraController::clone() const
 {
   CameraController * pCameraController = new CameraController();
   pCameraController->mIsEnabled = mIsEnabled;
@@ -27,7 +27,7 @@ G3d::Component * G3d::CameraController::clone() const
   return pCameraController;
 }
 
-void G3d::CameraController::update(double deltaTime)
+void g3d::CameraController::update(double deltaTime)
 {
   if (InputManager::getInstance().getKeyDown(KEY_E))
   {

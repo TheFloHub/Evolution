@@ -8,7 +8,7 @@
 
 #include "Component.h"
 
-namespace G3d
+namespace g3d
 {
 
 class CameraController : public Component
@@ -37,4 +37,4 @@ private:
   CameraController & operator=(CameraController const &) = delete;
 };
 
-} // namespace G3d
+} // namespace g3d

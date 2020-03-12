@@ -14,16 +14,16 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-G3d::ShadowMapPass::ShadowMapPass(unsigned int width, unsigned int height)
+g3d::ShadowMapPass::ShadowMapPass(unsigned int width, unsigned int height)
     : RenderPath(nullptr,
                  new FrameBufferObject(width, height,
                                        GL_DEPTH_COMPONENT24)) // depth buffer
 {
 }
 
-G3d::ShadowMapPass::~ShadowMapPass() {}
+g3d::ShadowMapPass::~ShadowMapPass() {}
 
-void G3d::ShadowMapPass::render(Light const * pLight,
+void g3d::ShadowMapPass::render(Light const * pLight,
                                 std::vector<SceneObject const *> sceneObjects)
 {
   mpFrameBuffer->use();
@@ -66,7 +66,7 @@ void G3d::ShadowMapPass::render(Light const * pLight,
   // glCullFace(GL_BACK);
 }
 
-G3d::TexturePtr G3d::ShadowMapPass::getDepthBuffer()
+g3d::TexturePtr g3d::ShadowMapPass::getDepthBuffer()
 {
   return mpFrameBuffer->getDepthComponent();
 }

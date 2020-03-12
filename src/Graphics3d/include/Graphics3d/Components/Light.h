@@ -11,7 +11,7 @@
 #include <glm/vec3.hpp>
 #include <vector>
 
-namespace G3d
+namespace g3d
 {
 
 class Light : public Component
@@ -23,13 +23,13 @@ public:
     POINT = 1
   };
 
-  Light(G3d::Light::Type type);
+  Light(g3d::Light::Type type);
 
   virtual ~Light();
 
-  G3d::Light::Type getType() const;
+  g3d::Light::Type getType() const;
 
-  void setType(G3d::Light::Type type);
+  void setType(g3d::Light::Type type);
 
   glm::vec3 const & getColor() const;
 
@@ -58,4 +58,4 @@ private:
   Light & operator=(Light const &) = delete;
 };
 
-} // namespace G3d
+} // namespace g3d

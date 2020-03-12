@@ -15,7 +15,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-G3d::DeferredShadingPass::DeferredShadingPass(unsigned int width,
+g3d::DeferredShadingPass::DeferredShadingPass(unsigned int width,
                                               unsigned int height)
     : RenderPath(ShaderManager::getInstance().get("DeferredLight"),
                  new FrameBufferObject(width, height,
@@ -42,9 +42,9 @@ G3d::DeferredShadingPass::DeferredShadingPass(unsigned int width,
   mCameraToLightTrafo = mpShader->getUniformLocation("cameraToLightTrafo");
 }
 
-G3d::DeferredShadingPass::~DeferredShadingPass() {}
+g3d::DeferredShadingPass::~DeferredShadingPass() {}
 
-void G3d::DeferredShadingPass::render(Camera const * pCamera,
+void g3d::DeferredShadingPass::render(Camera const * pCamera,
                                       Light const * pLight)
 {
   mpFrameBuffer->use();
@@ -115,32 +115,32 @@ void G3d::DeferredShadingPass::render(Camera const * pCamera,
   glEnable(GL_DEPTH_TEST);
 }
 
-void G3d::DeferredShadingPass::setInputDepth(TextureCPtr pTexture)
+void g3d::DeferredShadingPass::setInputDepth(TextureCPtr pTexture)
 {
   mpInputDepth = pTexture;
 }
 
-void G3d::DeferredShadingPass::setInputNormals(TextureCPtr pTexture)
+void g3d::DeferredShadingPass::setInputNormals(TextureCPtr pTexture)
 {
   mpInputNormals = pTexture;
 }
 
-void G3d::DeferredShadingPass::setInputAlbedo(TextureCPtr pTexture)
+void g3d::DeferredShadingPass::setInputAlbedo(TextureCPtr pTexture)
 {
   mpInputAlbedo = pTexture;
 }
 
-void G3d::DeferredShadingPass::setInputShadowMap(TextureCPtr pTexture)
+void g3d::DeferredShadingPass::setInputShadowMap(TextureCPtr pTexture)
 {
   mpInputShadowMap = pTexture;
 }
 
-G3d::TexturePtr G3d::DeferredShadingPass::getOutputBuffer()
+g3d::TexturePtr g3d::DeferredShadingPass::getOutputBuffer()
 {
   return mpFrameBuffer->getTexture(0);
 }
 
-void G3d::DeferredShadingPass::clear()
+void g3d::DeferredShadingPass::clear()
 {
   mpFrameBuffer->use();
   glViewport(0, 0, mWidth, mHeight);

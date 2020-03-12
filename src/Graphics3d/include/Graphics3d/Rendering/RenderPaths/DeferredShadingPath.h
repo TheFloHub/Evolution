@@ -10,7 +10,7 @@
 #include <Graphics3d/SharedPtrTypes.h>
 #include <gl/glew.h>
 
-namespace G3d
+namespace g3d
 {
 
 class Camera;
@@ -64,4 +64,4 @@ protected:
   GLuint mCameraToLightTrafo;
 };
 
-} // namespace G3d
+} // namespace g3d

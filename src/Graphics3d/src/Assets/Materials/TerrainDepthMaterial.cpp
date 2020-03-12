@@ -6,7 +6,7 @@
 #pragma warning(disable : 4201)
 #include <glm/gtc/type_ptr.hpp>
 
-G3d::TerrainDepthMaterial::TerrainDepthMaterial() :
+g3d::TerrainDepthMaterial::TerrainDepthMaterial() :
 	Material(ShaderManager::getInstance().getTerrainDepth()),
 	mpHeightMap(TextureManager::getInstance().getRGB255()), // TODO: Luminence0 ?
 	mMvpMatrixLoc(0)
@@ -17,12 +17,12 @@ G3d::TerrainDepthMaterial::TerrainDepthMaterial() :
 	mMvpMatrixLoc = glGetUniformLocation(program, "modelViewProjectionMatrix");
 }
 
-G3d::TerrainDepthMaterial::~TerrainDepthMaterial()
+g3d::TerrainDepthMaterial::~TerrainDepthMaterial()
 {
 
 }
 
-void G3d::TerrainDepthMaterial::use() const
+void g3d::TerrainDepthMaterial::use() const
 {
 	Material::use(); // enables shader program
 	glUniformMatrix4fv(mMvpMatrixLoc, 1, GL_FALSE, glm::value_ptr(Shader::getGlobalMat4("modelViewProjectionMatrix")));
@@ -30,7 +30,7 @@ void G3d::TerrainDepthMaterial::use() const
 	mpHeightMap->use();
 }
 
-void G3d::TerrainDepthMaterial::setHeightMap(TextureCPtr pHeightMap)
+void g3d::TerrainDepthMaterial::setHeightMap(TextureCPtr pHeightMap)
 {
 	mpHeightMap = pHeightMap;
 }

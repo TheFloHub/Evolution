@@ -12,7 +12,7 @@
 #include <map>
 #include <string>
 
-namespace G3d
+namespace g3d
 {
 
 class MaterialManager
@@ -77,4 +77,4 @@ private:
   std::map<std::string, MaterialPtr> mMaterialMap;
 };
 
-} // namespace G3d
+} // namespace g3d

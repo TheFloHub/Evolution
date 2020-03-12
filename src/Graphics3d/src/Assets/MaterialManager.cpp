@@ -2,22 +2,22 @@
 #include "Graphics3d/Assets/Material.h"
 #include <Graphics3d/Assets/Materials/DefaultDepthMaterial.h>
 
-G3d::MaterialManager & G3d::MaterialManager::getInstance()
+g3d::MaterialManager & g3d::MaterialManager::getInstance()
 {
   static MaterialManager instance;
   return instance;
 }
 
-G3d::MaterialManager::MaterialManager() : mMaterialMap() {}
+g3d::MaterialManager::MaterialManager() : mMaterialMap() {}
 
-G3d::MaterialManager::~MaterialManager() {}
+g3d::MaterialManager::~MaterialManager() {}
 
-G3d::MaterialCPtr G3d::MaterialManager::getDefaultDepthMaterial() const
+g3d::MaterialCPtr g3d::MaterialManager::getDefaultDepthMaterial() const
 {
   return get<DefaultDepthMaterial>("DefaultDepthMaterial");
 }
 
-void G3d::MaterialManager::initStandardMaterials()
+void g3d::MaterialManager::initStandardMaterials()
 {
   create<DefaultDepthMaterial>("DefaultDepthMaterial");
 }

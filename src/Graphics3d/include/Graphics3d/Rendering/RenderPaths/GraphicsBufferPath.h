@@ -10,7 +10,7 @@
 #include <Graphics3d/SharedPtrTypes.h>
 #include <vector>
 
-namespace G3d
+namespace g3d
 {
 
 class Camera;
@@ -38,4 +38,4 @@ protected:
   GraphicsBufferPath & operator=(GraphicsBufferPath const &) = delete;
 };
 
-} // namespace G3d
+} // namespace g3d

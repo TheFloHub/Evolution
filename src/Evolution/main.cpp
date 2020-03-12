@@ -27,7 +27,7 @@
 #include <vector>
 
 using namespace std;
-using namespace G3d;
+using namespace g3d;
 
 // Globals
 std::unique_ptr<SceneObject> pRoot;

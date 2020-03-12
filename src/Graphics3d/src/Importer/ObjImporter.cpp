@@ -4,7 +4,7 @@
 
 using namespace std;
 
-G3d::ObjImporter::ObjImporter(string objFileName)
+g3d::ObjImporter::ObjImporter(string objFileName)
     : mFileOkay(false), mVertexList(), mNormalList(), mTextureList(),
       mNewNormalList(), mNewTextureList(), mIndices(), mCalculatedNormals()
 {
@@ -31,7 +31,7 @@ G3d::ObjImporter::ObjImporter(string objFileName)
   }
 }
 
-void G3d::ObjImporter::readModel(ifstream & objFile)
+void g3d::ObjImporter::readModel(ifstream & objFile)
 {
   string line;
 
@@ -73,9 +73,9 @@ void G3d::ObjImporter::readModel(ifstream & objFile)
   }
 }
 
-G3d::ObjImporter::~ObjImporter() {}
+g3d::ObjImporter::~ObjImporter() {}
 
-bool G3d::ObjImporter::addFace(string & line)
+bool g3d::ObjImporter::addFace(string & line)
 {
   // Get the three face tokens ignoring the first modus f token
   vector<string> faceTokens = getTokens(line, ' ');
@@ -165,7 +165,7 @@ bool G3d::ObjImporter::addFace(string & line)
   return true;
 }
 
-bool G3d::ObjImporter::read3Floats(const string & line, Point3f & p)
+bool g3d::ObjImporter::read3Floats(const string & line, Point3f & p)
 {
   vector<string> strings = getTokens(line, ' ');
   if (strings.size() != 4)
@@ -188,7 +188,7 @@ bool G3d::ObjImporter::read3Floats(const string & line, Point3f & p)
   return true;
 }
 
-bool G3d::ObjImporter::read2Floats(const string & line, Point2f & p)
+bool g3d::ObjImporter::read2Floats(const string & line, Point2f & p)
 {
   vector<string> strings = getTokens(line, ' ');
   if (strings.size() != 3)
@@ -207,7 +207,7 @@ bool G3d::ObjImporter::read2Floats(const string & line, Point2f & p)
   return true;
 }
 
-vector<string> G3d::ObjImporter::getTokens(const string & line, const char c)
+vector<string> g3d::ObjImporter::getTokens(const string & line, const char c)
 {
   vector<string> tokens;
   string s;
@@ -226,7 +226,7 @@ vector<string> G3d::ObjImporter::getTokens(const string & line, const char c)
   return tokens;
 }
 
-void G3d::ObjImporter::trim(string & str)
+void g3d::ObjImporter::trim(string & str)
 {
   string::size_type pos1 = str.find_first_not_of(' ');
   string::size_type pos2 = str.find_last_not_of(' ');
@@ -234,7 +234,7 @@ void G3d::ObjImporter::trim(string & str)
                    pos2 == string::npos ? str.length() - 1 : pos2 - pos1 + 1);
 }
 
-void G3d::ObjImporter::centerScale()
+void g3d::ObjImporter::centerScale()
 {
   Point3f p = mVertexList[0];
   float leftPt = p.x;
@@ -285,7 +285,7 @@ void G3d::ObjImporter::centerScale()
   }
 }
 
-void G3d::ObjImporter::calculateNormals()
+void g3d::ObjImporter::calculateNormals()
 {
   mNewNormalList.clear();
 
@@ -322,9 +322,9 @@ void G3d::ObjImporter::calculateNormals()
   }
 }
 
-bool G3d::ObjImporter::isSuccessfullyLoaded() const { return mFileOkay; }
+bool g3d::ObjImporter::isSuccessfullyLoaded() const { return mFileOkay; }
 
-std::vector<GLfloat> const G3d::ObjImporter::getVertices() const
+std::vector<GLfloat> const g3d::ObjImporter::getVertices() const
 {
   std::vector<GLfloat> vertices;
   vertices.reserve(3 * mVertexList.size());
@@ -337,7 +337,7 @@ std::vector<GLfloat> const G3d::ObjImporter::getVertices() const
   return vertices;
 }
 
-std::vector<GLfloat> const G3d::ObjImporter::getTextureCoords() const
+std::vector<GLfloat> const g3d::ObjImporter::getTextureCoords() const
 {
   std::vector<GLfloat> texCoords;
   texCoords.reserve(2 * mNewTextureList.size());
@@ -350,7 +350,7 @@ std::vector<GLfloat> const G3d::ObjImporter::getTextureCoords() const
   return texCoords;
 }
 
-std::vector<GLfloat> const G3d::ObjImporter::getNormals() const
+std::vector<GLfloat> const g3d::ObjImporter::getNormals() const
 {
   std::vector<GLfloat> normals;
   normals.reserve(3 * mNewNormalList.size());
@@ -364,7 +364,7 @@ std::vector<GLfloat> const G3d::ObjImporter::getNormals() const
   return normals;
 }
 
-std::vector<GLuint> const G3d::ObjImporter::getIndices() const
+std::vector<GLuint> const g3d::ObjImporter::getIndices() const
 {
   std::vector<GLuint> indices;
   indices.reserve(3 * mIndices.size());

@@ -2,17 +2,17 @@
 #include "Graphics3d/Assets/Mesh.h"
 #include <iostream>
 
-G3d::MeshManager & G3d::MeshManager::getInstance()
+g3d::MeshManager & g3d::MeshManager::getInstance()
 {
   static MeshManager instance;
   return instance;
 }
 
-G3d::MeshManager::MeshManager() : mMeshMap() {}
+g3d::MeshManager::MeshManager() : mMeshMap() {}
 
-G3d::MeshManager::~MeshManager() {}
+g3d::MeshManager::~MeshManager() {}
 
-G3d::MeshPtr G3d::MeshManager::load(std::string const & meshName,
+g3d::MeshPtr g3d::MeshManager::load(std::string const & meshName,
                                     std::string const & fileName)
 {
   MeshPtr pMesh = get(meshName);
@@ -27,7 +27,7 @@ G3d::MeshPtr G3d::MeshManager::load(std::string const & meshName,
       .first->second;
 }
 
-G3d::MeshPtr G3d::MeshManager::get(std::string const & meshName) const
+g3d::MeshPtr g3d::MeshManager::get(std::string const & meshName) const
 {
   std::map<std::string, MeshPtr>::const_iterator iter = mMeshMap.find(meshName);
   if (iter != mMeshMap.end())
@@ -37,23 +37,23 @@ G3d::MeshPtr G3d::MeshManager::get(std::string const & meshName) const
   return MeshPtr();
 }
 
-G3d::MeshPtr G3d::MeshManager::getPlane() const { return get("StdPlane"); }
+g3d::MeshPtr g3d::MeshManager::getPlane() const { return get("StdPlane"); }
 
-G3d::MeshPtr G3d::MeshManager::getCircle() const { return get("StdCircle"); }
+g3d::MeshPtr g3d::MeshManager::getCircle() const { return get("StdCircle"); }
 
-G3d::MeshPtr G3d::MeshManager::getTriangle() const
+g3d::MeshPtr g3d::MeshManager::getTriangle() const
 {
   return get("StdTriangle");
 }
 
-G3d::MeshPtr G3d::MeshManager::getGrid() const { return get("StdGrid"); }
+g3d::MeshPtr g3d::MeshManager::getGrid() const { return get("StdGrid"); }
 
-G3d::MeshPtr G3d::MeshManager::getScreenAlignedQuad() const
+g3d::MeshPtr g3d::MeshManager::getScreenAlignedQuad() const
 {
   return get("StdScreenAlignedQuad");
 }
 
-void G3d::MeshManager::initStandardMeshes()
+void g3d::MeshManager::initStandardMeshes()
 {
   createPlane();
   createCircle();
@@ -62,7 +62,7 @@ void G3d::MeshManager::initStandardMeshes()
   createGrid();
 }
 
-void G3d::MeshManager::createPlane()
+void g3d::MeshManager::createPlane()
 {
   GLfloat v[] = {-0.5f, -0.5f, 0.0f, 0.5f,  -0.5f, 0.0f,
                  0.5f,  0.5f,  0.0f, -0.5f, 0.5f,  0.0f};
@@ -83,7 +83,7 @@ void G3d::MeshManager::createPlane()
       "StdPlane", MeshPtr(new Mesh(vertices, normals, texCoords, indices))));
 }
 
-void G3d::MeshManager::createCircle()
+void g3d::MeshManager::createCircle()
 {
   unsigned int numVerts = 36;
   std::vector<GLfloat> v;
@@ -133,7 +133,7 @@ void G3d::MeshManager::createCircle()
   mMeshMap.insert(std::make_pair("StdCircle", MeshPtr(new Mesh(v, n, t, i))));
 }
 
-void G3d::MeshManager::createTriangle()
+void g3d::MeshManager::createTriangle()
 {
   GLfloat v[] = {0.5f, 0.0f, -0.5f, -0.5f, 0.0f, -0.5f, 0.0f, 0.0f, 0.5f};
 
@@ -152,7 +152,7 @@ void G3d::MeshManager::createTriangle()
       "StdTriangle", MeshPtr(new Mesh(vertices, normals, texCoords, indices))));
 }
 
-void G3d::MeshManager::createScreenAlignedQuad()
+void g3d::MeshManager::createScreenAlignedQuad()
 {
   GLfloat v[] = {-1.0f, 1.0f, 0.0f, -1.0f, -1.0f, 0.0f,
                  1.0f,  1.0f, 0.0f, 1.0f,  -1.0f, 0.0f};
@@ -175,7 +175,7 @@ void G3d::MeshManager::createScreenAlignedQuad()
 }
 
 /*
-void G3d::MeshManager::CreateGrid()
+void g3d::MeshManager::CreateGrid()
 {
         size_t const count = 512;
         size_t const numVerts = count*count;
@@ -234,7 +234,7 @@ i))));
 }
 */
 
-void G3d::MeshManager::createGrid()
+void g3d::MeshManager::createGrid()
 {
   size_t const numEdgeVertices = 512;
   size_t const numVerts = numEdgeVertices * numEdgeVertices;

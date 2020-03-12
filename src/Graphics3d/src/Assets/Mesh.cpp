@@ -3,7 +3,7 @@
 #include <gl/glew.h>
 #include <glm/glm.hpp>
 
-G3d::Mesh::Mesh(std::string const & objFileName)
+g3d::Mesh::Mesh(std::string const & objFileName)
     : mVao(0), mVboVertices(0), mVboNormals(0), mVboTexcoords(0),
       mVboTangents(0), mVboBitangents(0), mVboIndices(0), mNumberOfVertices(0),
       mNumberOfElementsToDraw(0)
@@ -16,7 +16,7 @@ G3d::Mesh::Mesh(std::string const & objFileName)
   }
 }
 
-G3d::Mesh::Mesh(std::vector<GLfloat> const & vertices,
+g3d::Mesh::Mesh(std::vector<GLfloat> const & vertices,
                 std::vector<GLfloat> const & normals,
                 std::vector<GLfloat> const & texCoords,
                 std::vector<GLuint> const & indices)
@@ -27,7 +27,7 @@ G3d::Mesh::Mesh(std::vector<GLfloat> const & vertices,
   generateVbos(vertices, normals, texCoords, indices);
 }
 
-G3d::Mesh::~Mesh()
+g3d::Mesh::~Mesh()
 {
   if (mVboVertices != 0)
     glDeleteBuffers(1, &mVboVertices);
@@ -45,7 +45,7 @@ G3d::Mesh::~Mesh()
     glDeleteVertexArrays(1, &mVao);
 }
 
-void G3d::Mesh::generateVbos(std::vector<GLfloat> const & vertices,
+void g3d::Mesh::generateVbos(std::vector<GLfloat> const & vertices,
                              std::vector<GLfloat> const & normals,
                              std::vector<GLfloat> const & texCoords,
                              std::vector<GLuint> const & indices)
@@ -109,7 +109,7 @@ void G3d::Mesh::generateVbos(std::vector<GLfloat> const & vertices,
   mNumberOfElementsToDraw = (unsigned int)indices.size();
 }
 
-void G3d::Mesh::generateTangentSpace(std::vector<GLfloat> const & vertices,
+void g3d::Mesh::generateTangentSpace(std::vector<GLfloat> const & vertices,
                                      std::vector<GLfloat> const & normals,
                                      std::vector<GLfloat> const & texCoords,
                                      std::vector<GLuint> const & indices)
@@ -218,7 +218,7 @@ void G3d::Mesh::generateTangentSpace(std::vector<GLfloat> const & vertices,
       glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 }
 
-void G3d::Mesh::render() const
+void g3d::Mesh::render() const
 {
   glBindVertexArray(mVao);
   glDrawRangeElements(GL_TRIANGLES, 0, mNumberOfVertices,

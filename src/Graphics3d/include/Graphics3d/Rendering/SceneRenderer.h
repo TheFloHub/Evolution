@@ -14,7 +14,7 @@
 #include <Graphics3d/Rendering/RenderPaths/ShadowMapPath.h>
 #include <vector>
 
-namespace G3d
+namespace g3d
 {
 
 // forward declarations
@@ -60,4 +60,4 @@ private:
   FinalShadingPass mFinalShadingPass;
 };
 
-} // namespace G3d
+} // namespace g3d

@@ -10,7 +10,7 @@
 #include <Graphics3d/Assets/Material.h>
 #include <gl/glew.h>
 
-namespace G3d
+namespace g3d
 {
 
 class DefaultDepthMaterial : public Material
@@ -33,4 +33,4 @@ private:
 
 typedef std::shared_ptr<DefaultDepthMaterial> DefaultDepthMaterialPtr;
 typedef std::shared_ptr<DefaultDepthMaterial const> DefaultDepthMaterialCPtr;
-} // namespace G3d
+} // namespace g3d

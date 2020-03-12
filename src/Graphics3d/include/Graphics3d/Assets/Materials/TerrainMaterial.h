@@ -10,7 +10,7 @@
 #include "Graphics3d/Assets/Material.h"
 #include <gl/glew.h>
 
-namespace G3d
+namespace g3d
 {
 
 class TerrainMaterial : public Material
@@ -41,4 +41,4 @@ private:
 
 typedef std::shared_ptr<TerrainMaterial> TerrainMaterialPtr;
 typedef std::shared_ptr<TerrainMaterial const> TerrainMaterialCPtr;
-} // namespace G3d
+} // namespace g3d

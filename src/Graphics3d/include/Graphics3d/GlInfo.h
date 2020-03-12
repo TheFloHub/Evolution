@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace G3d
+namespace g3d
 {
 
 class GlInfo
@@ -18,11 +18,11 @@ public:
   static void checkFboErrorImpl(int line, const char * file);
 };
 
-} // namespace G3d
+} // namespace g3d
 
 #ifdef _DEBUG
-#define CHECKGLERROR() G3d::GlInfo::checkGlErrorImpl(__LINE__, __FILE__)
-#define CHECKGLFBOERROR() G3d::GlInfo::checkFboErrorImpl(__LINE__, __FILE__)
+#define CHECKGLERROR() g3d::GlInfo::checkGlErrorImpl(__LINE__, __FILE__)
+#define CHECKGLFBOERROR() g3d::GlInfo::checkFboErrorImpl(__LINE__, __FILE__)
 #else
 #define CHECKGLERROR()
 #define CHECKGLFBOERROR()

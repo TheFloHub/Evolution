@@ -6,7 +6,7 @@
 #pragma warning(disable : 4201)
 #include <glm/gtc/type_ptr.hpp>
 
-G3d::SpecularMaterial::SpecularMaterial()
+g3d::SpecularMaterial::SpecularMaterial()
     : Material(ShaderManager::getInstance().getSpecular()), mDiffuseRed(1.0f),
       mDiffuseGreen(1.0f), mDiffuseBlue(1.0f), mTilingX(1.0f), mTilingY(1.0f),
       mShininess(32.0f), mpTexture(TextureManager::getInstance().getRGBA255()),
@@ -22,9 +22,9 @@ G3d::SpecularMaterial::SpecularMaterial()
   mShininessLoc = mpShader->getUniformLocation("shininess");
 }
 
-G3d::SpecularMaterial::~SpecularMaterial() {}
+g3d::SpecularMaterial::~SpecularMaterial() {}
 
-void G3d::SpecularMaterial::use() const
+void g3d::SpecularMaterial::use() const
 {
   Material::use(); // enables shader program
   glUniformMatrix4fv(
@@ -39,24 +39,24 @@ void G3d::SpecularMaterial::use() const
   mpTexture->use();
 }
 
-void G3d::SpecularMaterial::setDiffuseColor(float red, float green, float blue)
+void g3d::SpecularMaterial::setDiffuseColor(float red, float green, float blue)
 {
   mDiffuseRed = red;
   mDiffuseGreen = green;
   mDiffuseBlue = blue;
 }
 
-void G3d::SpecularMaterial::setShininess(float shininess)
+void g3d::SpecularMaterial::setShininess(float shininess)
 {
   mShininess = shininess;
 }
 
-void G3d::SpecularMaterial::setTexture(TextureCPtr pTexture)
+void g3d::SpecularMaterial::setTexture(TextureCPtr pTexture)
 {
   mpTexture = pTexture;
 }
 
-void G3d::SpecularMaterial::setTiling(float x, float y)
+void g3d::SpecularMaterial::setTiling(float x, float y)
 {
   mTilingX = x;
   mTilingY = y;

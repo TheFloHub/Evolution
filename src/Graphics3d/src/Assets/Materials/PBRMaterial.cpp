@@ -4,7 +4,7 @@
 #pragma warning(disable : 4201)
 #include <glm/gtc/type_ptr.hpp>
 
-G3d::PBRMaterial::PBRMaterial()
+g3d::PBRMaterial::PBRMaterial()
     : Material(ShaderManager::getInstance().getPBRStandard()), mRed(1.0f),
       mGreen(1.0f), mBlue(1.0f), mMetallic(0.0f), mRoughness(0.8f),
       mMvpMatrixLoc(0), mNormalMatrixLoc(0), mAlbedoLoc(0), mMetallicLoc(0),
@@ -18,9 +18,9 @@ G3d::PBRMaterial::PBRMaterial()
   mRoughnessLoc = mpShader->getUniformLocation("roughness");
 }
 
-G3d::PBRMaterial::~PBRMaterial() {}
+g3d::PBRMaterial::~PBRMaterial() {}
 
-void G3d::PBRMaterial::use() const
+void g3d::PBRMaterial::use() const
 {
   Material::use(); // enables shader program
   glUniformMatrix4fv(
@@ -33,13 +33,13 @@ void G3d::PBRMaterial::use() const
   glUniform1f(mRoughnessLoc, mRoughness);
 }
 
-void G3d::PBRMaterial::setAlbedo(float red, float green, float blue)
+void g3d::PBRMaterial::setAlbedo(float red, float green, float blue)
 {
   mRed = red;
   mGreen = green;
   mBlue = blue;
 }
 
-void G3d::PBRMaterial::setMetallic(float metallic) { mMetallic = metallic; }
+void g3d::PBRMaterial::setMetallic(float metallic) { mMetallic = metallic; }
 
-void G3d::PBRMaterial::setRoughness(float roughness) { mRoughness = roughness; }
+void g3d::PBRMaterial::setRoughness(float roughness) { mRoughness = roughness; }

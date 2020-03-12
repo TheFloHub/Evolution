@@ -3,7 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-G3d::Camera::Camera(unsigned int width, unsigned int height, float nearPlane,
+g3d::Camera::Camera(unsigned int width, unsigned int height, float nearPlane,
                     float farPlane, float fov)
     : Component(), mWidth(width), mHeight(height), mNearPlane(nearPlane),
       mFarPlane(farPlane), mFov(fov),
@@ -14,9 +14,9 @@ G3d::Camera::Camera(unsigned int width, unsigned int height, float nearPlane,
 {
 }
 
-G3d::Camera::~Camera() {}
+g3d::Camera::~Camera() {}
 
-G3d::Component * G3d::Camera::clone() const
+g3d::Component * g3d::Camera::clone() const
 {
   Camera * pCamera = new Camera(mWidth, mHeight, mNearPlane, mFarPlane, mFov);
   pCamera->mIsEnabled = mIsEnabled;
@@ -30,17 +30,17 @@ G3d::Component * G3d::Camera::clone() const
   return pCamera;
 }
 
-glm::mat4 const & G3d::Camera::getProjectionMatrix() const
+glm::mat4 const & g3d::Camera::getProjectionMatrix() const
 {
   return mProjectionMatrix;
 }
 
-glm::mat4 const & G3d::Camera::getInverseProjectionMatrix() const
+glm::mat4 const & g3d::Camera::getInverseProjectionMatrix() const
 {
   return mInverseProjectionMatrix;
 }
 
-void G3d::Camera::setImageSize(unsigned int width, unsigned int height)
+void g3d::Camera::setImageSize(unsigned int width, unsigned int height)
 {
   if (mWidth != width || mHeight != height)
   {
@@ -53,6 +53,6 @@ void G3d::Camera::setImageSize(unsigned int width, unsigned int height)
   }
 }
 
-float G3d::Camera::getNearPlane() const { return mNearPlane; }
+float g3d::Camera::getNearPlane() const { return mNearPlane; }
 
-float G3d::Camera::getFarPlane() const { return mFarPlane; }
+float g3d::Camera::getFarPlane() const { return mFarPlane; }

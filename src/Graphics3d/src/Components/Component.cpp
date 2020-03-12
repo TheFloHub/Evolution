@@ -1,9 +1,9 @@
 #include "Graphics3d/Components/Component.h"
 #include <Graphics3d/Scene/SceneObject.h>
 
-G3d::Component::Component() : mpSceneObject(nullptr), mIsEnabled(true) {}
+g3d::Component::Component() : mpSceneObject(nullptr), mIsEnabled(true) {}
 
-G3d::Component::~Component()
+g3d::Component::~Component()
 {
   if (mpSceneObject != nullptr)
   {
@@ -11,19 +11,19 @@ G3d::Component::~Component()
   }
 }
 
-void G3d::Component::update(double /*deltaTime*/) {}
+void g3d::Component::update(double /*deltaTime*/) {}
 
-void G3d::Component::render() const {}
+void g3d::Component::render() const {}
 
-void G3d::Component::renderDepth() const {}
+void g3d::Component::renderDepth() const {}
 
-G3d::SceneObject const * G3d::Component::getSceneObject() const
+g3d::SceneObject const * g3d::Component::getSceneObject() const
 {
   return mpSceneObject;
 }
 
-G3d::SceneObject * G3d::Component::getSceneObject() { return mpSceneObject; }
+g3d::SceneObject * g3d::Component::getSceneObject() { return mpSceneObject; }
 
-void G3d::Component::setEnabled(bool isEnabled) { mIsEnabled = isEnabled; }
+void g3d::Component::setEnabled(bool isEnabled) { mIsEnabled = isEnabled; }
 
-bool G3d::Component::isEnabled() const { return mIsEnabled; }
+bool g3d::Component::isEnabled() const { return mIsEnabled; }
