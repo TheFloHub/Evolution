@@ -19,20 +19,24 @@
 #include <Graphics3d/Rendering/SceneRenderer.h>
 #include <Graphics3d/Scene/SceneObject.h>
 
+#include "Individual.h"
+
 #include <GLFW/glfw3.h>
 #include <gl/glew.h>
 #include <iostream>
 #include <string>
 #include <thread>
 #include <vector>
+#include <random>
 
 using namespace std;
 using namespace g3d;
+using namespace evo;
 
 // Globals
-std::unique_ptr<SceneObject> pRoot;
-std::unique_ptr<SceneRenderer> pRenderer;
-Camera * pCamera = nullptr;
+std::unique_ptr<SceneObject> root;
+std::unique_ptr<SceneRenderer> renderer;
+Camera * camera = nullptr;
 
 void errorCallback(int error, const char * description)
 {
@@ -44,8 +48,8 @@ void resizeCallback(GLFWwindow * /*pWindow*/, int width, int height)
   cout << "resizeCallback" << endl;
   if (width > 0 && height > 0)
   {
-    pCamera->setImageSize(width, height);
-    pRenderer->setImageSize(width, height);
+    camera->setImageSize(width, height);
+    renderer->setImageSize(width, height);
   }
 }
 
@@ -68,17 +72,17 @@ bool initGL(int width, int height)
   MaterialManager::getInstance().initStandardMaterials();
 
   // renderer
-  pRenderer = std::unique_ptr<SceneRenderer>(new SceneRenderer(width, height));
+  renderer = std::unique_ptr<SceneRenderer>(new SceneRenderer(width, height));
 
   // graph
-  pRoot = std::unique_ptr<SceneObject>(new SceneObject("Root"));
+  root = std::unique_ptr<SceneObject>(new SceneObject("Root"));
 
   // load resources from hard disk
   MeshPtr meshSphere;
   try
   {
     meshSphere = MeshManager::getInstance().load(
-        "Sphere", "D:\\Eigene Daten\\Dokumente\\3D Modelle\\monkey.obj");
+        "Sphere", "D:\\Eigene Daten\\Dokumente\\3D Modelle\\isosphere.obj");
   }
   catch (std::exception const & exception)
   {
@@ -92,56 +96,112 @@ bool initGL(int width, int height)
   }
 
   // plane
-  MeshPtr meshPlane = MeshManager::getInstance().getPlane();
-  SceneObject * floor = new SceneObject("Floor");
-  PBRMaterialPtr pMaterial = PBRMaterialPtr(new PBRMaterial);
-  floor->addComponent(new MeshRenderer(meshPlane, pMaterial));
-  pRoot->addChild(floor);
+  //MeshPtr meshPlane = MeshManager::getInstance().getPlane();
+  //SceneObject * floor = new SceneObject("Floor");
+  //PBRMaterialPtr pMaterial = PBRMaterialPtr(new PBRMaterial);
+  //floor->addComponent(new MeshRenderer(meshPlane, pMaterial));
+  //root->addChild(floor);
 
-  // spheres
-  int numRows = 7;
-  int numColumns = 7;
-  float spacing = 2.5;
+  // random
+  float const terrainSize = 10.0f;
+  std::random_device rd;
+  std::mt19937 mt(rd());
+  std::uniform_real_distribution<float> dis(0.0f, terrainSize);
 
-  for (int row = 0; row < numRows; ++row)
+  // apples
+  SceneObject * apples = new SceneObject("Apples");
+  root->addChild(apples);
+  uint32_t numApples = 20;
+  PBRMaterialPtr appleMat =
+      MaterialManager::getInstance().create<PBRMaterial>("AppleMaterial");
+  appleMat->setAlbedo(0.8f, 0.2f, 0.2f);
+  for (uint32_t i = 0; i < numApples; ++i)
   {
-    for (int col = 0; col < numColumns; ++col)
-    {
-      pMaterial = PBRMaterialPtr(new PBRMaterial);
-      pMaterial->setAlbedo(1.0f, 0.0f, 0.0f);
-      pMaterial->setMetallic((float)row / (float)numRows);
-      pMaterial->setRoughness(
-          glm::clamp((float)col / (float)numColumns, 0.05f, 1.0f));
-
-      SceneObject * pSphere = new SceneObject("Sphere");
-      pSphere->addComponent(new MeshRenderer(meshSphere, pMaterial));
-      pSphere->getTransform()->setPosition(
-          glm::vec3((float)(col - (numColumns / 2)) * spacing,
-                    (float)(row - (numRows / 2)) * spacing, 0.0f));
-
-      pRoot->addChild(pSphere);
-    }
+    SceneObject * apple = new SceneObject("Apple");
+    apple->getTransform()->setPosition({dis(mt), 0.0f, dis(mt)});
+    apple->getTransform()->setScale({0.5f, 0.5f, 0.5f});
+    apple->addComponent(new MeshRenderer(meshSphere, appleMat));
+    apples->addChild(apple);
   }
 
+  // individuals
+  SceneObject * individuals = new SceneObject("Individuals");
+  root->addChild(individuals);
+  uint32_t const populationSize = 30;
+  for (uint32_t i = 0; i < populationSize; ++i)
+  {
+    SceneObject * indi = new SceneObject("Indi");
+    PBRMaterialPtr indiMat = PBRMaterialPtr(new PBRMaterial);
+    indi->addComponent(new MeshRenderer(meshSphere, indiMat));
+    indi->addComponent(new Individual());
+    indi->getComponent<Individual>()->setApples(apples);
+    indi->getComponent<Individual>()->setIndividuals(individuals);
+    indi->getTransform()->setPosition({dis(mt), 0.0f, dis(mt)});
+    indi->getTransform()->setScale({0.5f, 0.5f, 0.5f});
+    individuals->addChild(indi);
+  }
+
+
+
   // camera
-  SceneObject * pCameraObj = new SceneObject("Camera");
-  pCamera = new Camera(width, height, 0.1f, 100.0f, 80.0f);
-  pCameraObj->addComponent(pCamera);
-  pCameraObj->addComponent(new CameraController);
-  pCameraObj->getTransform()->lookAt(glm::vec3(0.0f, 0.0f, -5.0f),
-                                     glm::vec3(0.0f, 0.0f, 0.0f),
-                                     glm::vec3(0.0f, 1.0f, 0.0f));
-  pRoot->addChild(pCameraObj);
+  SceneObject * cameraObj = new SceneObject("Camera");
+  camera = new Camera(width, height, 0.1f, 100.0f, 80.0f);
+  cameraObj->addComponent(camera);
+  cameraObj->addComponent(new CameraController);
+  cameraObj->getTransform()->setPosition(
+      {terrainSize / 2.0f, terrainSize / 2.0f, terrainSize / 2.0f});
+  root->addChild(cameraObj);
 
   // lights
-  SceneObject * pDirectionalLight = new SceneObject("DirectionalLight");
-  pDirectionalLight->addComponent(new Light(Light::DIRECTIONAL));
-  pDirectionalLight->getComponent<Light>()->setIntensity(10.0f);
-  pDirectionalLight->getTransform()->rotate(45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-  pRoot->addChild(pDirectionalLight);
+
+  SceneObject * pDirectionalLight1 = new SceneObject("DirectionalLight");
+  pDirectionalLight1->addComponent(new Light(Light::DIRECTIONAL));
+  pDirectionalLight1->getComponent<Light>()->setIntensity(1.0f);
+  pDirectionalLight1->getComponent<Light>()->setColor(
+      {237.0f / 255.0f, 237.0f / 255.0f, 237.0f / 255.0f});
+  pDirectionalLight1->getTransform()->rotate(45.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+  root->addChild(pDirectionalLight1);
+
+  //SceneObject * pDirectionalLight2 = new SceneObject("DirectionalLight");
+  //pDirectionalLight2->addComponent(new Light(Light::DIRECTIONAL));
+  //pDirectionalLight2->getComponent<Light>()->setIntensity(0.4f);
+  //pDirectionalLight2->getComponent<Light>()->setColor(
+  //    {221.0f / 255.0f, 237.0f / 255.0f, 240.0f / 255.0f});
+  //pDirectionalLight2->getTransform()->rotate(180.0f+45.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+  //root->addChild(pDirectionalLight2);
 
   CHECKGLERROR();
   return true;
+}
+
+void hackyUpdates(double deltaTime)
+{
+  static float const terrainSize = 10.0f;
+  static std::random_device rd;
+  static std::mt19937 mt(rd());
+  static std::uniform_real_distribution<float> dis(0.0f, terrainSize);
+  static double passedTime = 0.0;
+  static double newAppleTime = 7.0;
+
+  passedTime += deltaTime;
+  if (passedTime >= newAppleTime)
+  {
+    passedTime -= newAppleTime;
+    SceneObject * apples = root->getChild("Apples");
+    uint32_t numApples = 2;
+    for (uint32_t i = 0; i < numApples; ++i)
+    {
+      SceneObject * apple = new SceneObject("Apple");
+      apple->getTransform()->setPosition({dis(mt), 0.0f, dis(mt)});
+      apple->getTransform()->setScale({0.5f, 0.5f, 0.5f});
+      apple->addComponent(new MeshRenderer(
+          MeshManager::getInstance().get("Sphere"),
+          MaterialManager::getInstance().get<PBRMaterial>("AppleMaterial")));
+      apples->addChild(apple);
+    }
+  }
+
+
 }
 
 int main()
@@ -210,10 +270,12 @@ int main()
     glfwPollEvents();
 
     // update
-    pRoot->update(deltaTime);
+    root->update(deltaTime);
+    hackyUpdates(deltaTime);
+    SceneObject::updateSceneGraph();
 
     // render
-    pRenderer->render(pRoot.get());
+    renderer->render(root.get());
     CHECKGLERROR();
 
     // Swap front and back buffers

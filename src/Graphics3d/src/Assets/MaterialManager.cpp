@@ -12,7 +12,7 @@ g3d::MaterialManager::MaterialManager() : mMaterialMap() {}
 
 g3d::MaterialManager::~MaterialManager() {}
 
-g3d::MaterialCPtr g3d::MaterialManager::getDefaultDepthMaterial() const
+g3d::MaterialPtr g3d::MaterialManager::getDefaultDepthMaterial() const
 {
   return get<DefaultDepthMaterial>("DefaultDepthMaterial");
 }

@@ -3,14 +3,14 @@
 #include <Graphics3d/Assets/MaterialManager.h>
 #include <Graphics3d/Assets/Mesh.h>
 
-g3d::MeshRenderer::MeshRenderer(MeshCPtr pMesh, MaterialCPtr pMaterial,
-                                MaterialCPtr pDepthMaterial)
+g3d::MeshRenderer::MeshRenderer(MeshPtr pMesh, MaterialPtr pMaterial,
+                                MaterialPtr pDepthMaterial)
     : Component(), mpMesh(pMesh), mpMaterial(pMaterial),
       mpDepthMaterial(pDepthMaterial)
 {
 }
 
-g3d::MeshRenderer::MeshRenderer(MeshCPtr pMesh, MaterialCPtr pMaterial)
+g3d::MeshRenderer::MeshRenderer(MeshPtr pMesh, MaterialPtr pMaterial)
     : Component(), mpMesh(pMesh), mpMaterial(pMaterial),
       mpDepthMaterial(MaterialManager::getInstance().getDefaultDepthMaterial())
 {
@@ -41,7 +41,9 @@ void g3d::MeshRenderer::renderDepth() const
   mpMesh->render();
 }
 
-void g3d::MeshRenderer::setMaterial(MaterialCPtr pNewMaterial)
+void g3d::MeshRenderer::setMaterial(MaterialPtr pNewMaterial)
 {
   mpMaterial = pNewMaterial;
 }
+
+g3d::MaterialPtr g3d::MeshRenderer::getMaterial() const { return mpMaterial; }

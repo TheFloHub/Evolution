@@ -16,10 +16,10 @@ namespace g3d
 class MeshRenderer : public Component
 {
 public:
-  MeshRenderer(MeshCPtr pMesh, MaterialCPtr pMaterial,
-               MaterialCPtr pDepthMaterial);
+  MeshRenderer(MeshPtr pMesh, MaterialPtr pMaterial,
+               MaterialPtr pDepthMaterial);
 
-  MeshRenderer(MeshCPtr pMesh, MaterialCPtr pMaterial);
+  MeshRenderer(MeshPtr pMesh, MaterialPtr pMaterial);
 
   virtual ~MeshRenderer();
 
@@ -27,16 +27,18 @@ public:
 
   void renderDepth() const override;
 
-  void setMaterial(MaterialCPtr pNewMaterial);
+  void setMaterial(MaterialPtr pNewMaterial);
+
+  MaterialPtr getMaterial() const;
 
 protected:
   Component * clone() const override;
 
-  MeshCPtr mpMesh;
+  MeshPtr mpMesh;
 
-  MaterialCPtr mpMaterial;
+  MaterialPtr mpMaterial;
 
-  MaterialCPtr mpDepthMaterial;
+  MaterialPtr mpDepthMaterial;
 
 private:
   MeshRenderer(MeshRenderer const &) = delete;

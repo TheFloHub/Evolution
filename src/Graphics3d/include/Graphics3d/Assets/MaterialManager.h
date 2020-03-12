@@ -63,7 +63,7 @@ public:
     return std::shared_ptr<TMaterial>();
   }
 
-  MaterialCPtr getDefaultDepthMaterial() const;
+  MaterialPtr getDefaultDepthMaterial() const;
 
   void initStandardMaterials();
 

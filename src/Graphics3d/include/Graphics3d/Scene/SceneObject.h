@@ -33,6 +33,13 @@ class Transform;
 class SceneObject
 {
 public:
+
+  static void instantiate(SceneObject * object, SceneObject * parent);
+
+  static void destroy(SceneObject * object);
+
+  static void updateSceneGraph();
+
   SceneObject(std::string const & name);
 
   ~SceneObject();
@@ -135,6 +142,12 @@ public:
   /** Returns the name of the scene object. */
   std::string const & getName() const;
 
+  /**
+   * Removes the child from this scene object committing ownership to the
+   * caller. Only call this, if you know what you're doing.
+   */
+  void g3d::SceneObject::removeChild(SceneObject * child);
+
 private:
   SceneObject(SceneObject const &) = delete;
 
@@ -145,12 +158,6 @@ private:
 
   /** Checks if the given node is a descendant of this scene object. */
   bool isNodeDescendant(SceneObject const * pNode) const;
-
-  /**
-   * Removes the child from this scene object committing ownership to the
-   * caller. Only call this, if you know what you're doing.
-   */
-  void g3d::SceneObject::removeChild(SceneObject * child);
 
   /** The name of this scene object. */
   std::string mName;
@@ -177,5 +184,7 @@ private:
    */
   bool mIsEnabled;
 };
+
+
 
 } // namespace g3d

@@ -6,6 +6,41 @@
 
 using namespace g3d;
 
+namespace
+{
+std::vector<SceneObject *> toDestroy;
+std::vector<std::tuple<SceneObject *, SceneObject *>> toInstantiate;
+}
+
+void g3d::SceneObject::instantiate(SceneObject * object, SceneObject * parent)
+{
+  toInstantiate.emplace_back(std::make_tuple(object, parent));
+}
+
+void g3d::SceneObject::destroy(SceneObject * object)
+{
+  toDestroy.emplace_back(object);
+}
+
+void g3d::SceneObject::updateSceneGraph()
+{
+  for (auto & x : toInstantiate)
+  {
+    SceneObject * object = std::get<0>(x);
+    SceneObject * parent = std::get<1>(x);
+    parent->addChild(object);
+  }
+  toInstantiate.clear();
+
+  for (auto & x : toDestroy)
+  {
+    delete x;
+  }
+  toDestroy.clear();
+
+}
+
+
 g3d::SceneObject::SceneObject(std::string const & name)
     : mName(name), mpParent(nullptr), mChildren(), mpTransform(new Transform),
       mComponents(), mIsEnabled(true)
@@ -137,11 +172,13 @@ void g3d::SceneObject::update(double deltaTime)
       iter->second->update(deltaTime);
     }
   }
-  for (auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
+  // we don't use iterators here, since child objects could add new child scene
+  // objects to this one
+  for (size_t i = 0; i < mChildren.size(); ++i)
   {
-    if ((*iter)->isEnabled())
+    if (mChildren[i]->isEnabled())
     {
-      (*iter)->update(deltaTime);
+      mChildren[i]->update(deltaTime);
     }
   }
 }
