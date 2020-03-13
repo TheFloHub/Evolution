@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include "Graphics3d/GlInfo.h"
 #include "Graphics3d/Input/InputManager.h"
+#include <Math/MathTypes.h>
 #include <iostream>
 #include <random>
 #include <string>
@@ -11,6 +12,68 @@
 
 using namespace std;
 using namespace g3d;
+using namespace math;
+
+struct Object
+{
+  virtual ~Object() = default;
+  Vector2d m_position{0.0, 0.0};
+};
+
+struct Person : public Object
+{
+  virtual ~Person() = default;
+  double m_speed{0.25};
+  double m_sensingRange{10.0};
+  double m_interactionRange{1.0};
+  double m_size{1.0};
+  double m_dirAngle{0.0};
+  double m_vitality{200.0};
+  double m_vitalityDecreasePerSec{10};
+  double m_reproductionTime{10.0};
+  double m_reproductionPassedTime{0.0};
+};
+
+struct Apple : public Object
+{
+  virtual ~Apple() = default;
+};
+
+
+
+void update(double /*deltaTime*/) {
+
+}
+
+void render(int width, int height)
+{
+  // GLfloat aspect = (GLfloat)width / (GLfloat)height;
+  glViewport(0, 0, width, height);
+  // glEnable(GL_CULL_FACE);
+  glDisable(GL_CULL_FACE);
+  // glFrontFace(GL_CCW);
+  // glCullFace(GL_BACK);
+  
+
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, width, 0, height, -10, 10);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  glPointSize(20.0f);
+  glBegin(GL_POINTS);
+  glColor3f(1.0f, 1.0f, 1.0f);
+  glVertex3f(100.0f, 100.0f, 0.0f);
+  glColor3f(1.0f, 0.0f, 0.0f);
+  glVertex3f(200.0f, 100.0f, 0.0f);
+  glColor3f(0.0f, 1.0f, 0.0f);
+  glVertex3f(100.0f, 200.0f, 0.0f);
+  glEnd();
+}
 
 void errorCallback(int error, const char * description)
 {
@@ -24,82 +87,6 @@ void resizeCallback(GLFWwindow * /*pWindow*/, int width, int height)
   {
   }
 }
-
-void drawRect()
-{
-  glBegin(GL_TRIANGLES);       // Each set of 3 vertices form a triangle
-  glColor3f(0.0f, 0.0f, 1.0f); // Blue
-  glVertex2f(0.1f, -0.6f);
-  glVertex2f(0.7f, -0.6f);
-  glVertex2f(0.4f, -0.1f);
-
-  glColor3f(1.0f, 0.0f, 0.0f); // Red
-  glVertex2f(0.3f, -0.4f);
-  glColor3f(0.0f, 1.0f, 0.0f); // Green
-  glVertex2f(0.9f, -0.4f);
-  glColor3f(0.0f, 0.0f, 1.0f); // Blue
-  glVertex2f(0.6f, -0.9f);
-  glEnd();
-}
-
-void render(int width, int height)
-{
-  // GLfloat aspect = (GLfloat)width / (GLfloat)height;
-  glViewport(0, 0, width, height);
-  // glEnable(GL_CULL_FACE);
-  glDisable(GL_CULL_FACE);
-  // glFrontFace(GL_CCW);
-  // glCullFace(GL_BACK);
-  //
-
-  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, width, 0, height, -10, 10);
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  // gluLookAt(0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
-
-  glPointSize(20.0f);
-  glBegin(GL_POINTS);
-  // glVertex3f(0.0f, 0.0f, 1.0f);
-  // glVertex3f(-100.5f, -100.5f, 1.0f);
-
-  glColor3f(1.0f, 1.0f, 1.0f);
-  glVertex3f(100.0f, 100.0f, 0.0f);
-
-  glColor3f(1.0f, 0.0f, 0.0f);
-  glVertex3f(200.0f, 100.0f, 0.0f);
-
-  glColor3f(0.0f, 1.0f, 0.0f);
-  glVertex3f(100.0f, 200.0f, 0.0f);
-  glEnd();
-
-  // glBegin(GL_QUADS);
-  // glColor3i(255, 255, 255);
-  // glVertex3i(100, 100, 1);
-  // glColor3i(255, 255, 255);
-  // glVertex3i(100, 200, 1);
-  // glColor3i(255, 255, 255);
-  // glVertex3i(200, 200, 1);
-  // glColor3i(255, 255, 255);
-  // glVertex3i(200, 100, 1);
-  // glEnd();
-
-  // glBegin(GL_QUADS);
-  // glVertex3i(100, 100, 1);
-
-  // glVertex3i(200, 100, 1);
-
-  // glVertex3i(200, 200, 1);
-
-  // glVertex3i(100, 200, 1);
-  // glEnd();
-}
-
 int main()
 {
   GLFWwindow * window = nullptr;
@@ -166,6 +153,7 @@ int main()
     glfwPollEvents();
 
     // update
+    update(deltaTime);
 
     // render
     render(width, height);
