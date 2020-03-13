@@ -1,42 +1,16 @@
 #pragma warning(disable : 4201)
-#include <Graphics3d/Assets/MaterialManager.h>
-#include <Graphics3d/Assets/Materials/PBRMaterial.h>
-#include <Graphics3d/Assets/Mesh.h>
-#include <Graphics3d/Assets/MeshManager.h>
-#include <Graphics3d/Assets/Shader.h>
-#include <Graphics3d/Assets/ShaderManager.h>
-#include <Graphics3d/Assets/Texture.h>
-#include <Graphics3d/Assets/TextureManager.h>
-#include <Graphics3d/GlInfo.h>
-#include <Graphics3d/Input/InputManager.h>
-
-#include <Graphics3d/Components/Camera.h>
-#include <Graphics3d/Components/CameraController.h>
-#include <Graphics3d/Components/Light.h>
-#include <Graphics3d/Components/MeshRenderer.h>
-#include <Graphics3d/Components/Transform.h>
-
-#include <Graphics3d/Rendering/SceneRenderer.h>
-#include <Graphics3d/Scene/SceneObject.h>
-
-#include "Individual.h"
-
-#include <GLFW/glfw3.h>
 #include <gl/glew.h>
+#include <GLFW/glfw3.h>
+#include "Graphics3d/GlInfo.h"
+#include "Graphics3d/Input/InputManager.h"
 #include <iostream>
+#include <random>
 #include <string>
 #include <thread>
 #include <vector>
-#include <random>
 
 using namespace std;
 using namespace g3d;
-using namespace evo;
-
-// Globals
-std::unique_ptr<SceneObject> root;
-std::unique_ptr<SceneRenderer> renderer;
-Camera * camera = nullptr;
 
 void errorCallback(int error, const char * description)
 {
@@ -48,160 +22,70 @@ void resizeCallback(GLFWwindow * /*pWindow*/, int width, int height)
   cout << "resizeCallback" << endl;
   if (width > 0 && height > 0)
   {
-    camera->setImageSize(width, height);
-    renderer->setImageSize(width, height);
   }
 }
 
-bool initGL(int width, int height)
+void drawRect() {
+  glBegin(GL_TRIANGLES);       // Each set of 3 vertices form a triangle
+  glColor3f(0.0f, 0.0f, 1.0f); // Blue
+  glVertex2f(0.1f, -0.6f);
+  glVertex2f(0.7f, -0.6f);
+  glVertex2f(0.4f, -0.1f);
+
+  glColor3f(1.0f, 0.0f, 0.0f); // Red
+  glVertex2f(0.3f, -0.4f);
+  glColor3f(0.0f, 1.0f, 0.0f); // Green
+  glVertex2f(0.9f, -0.4f);
+  glColor3f(0.0f, 0.0f, 1.0f); // Blue
+  glVertex2f(0.6f, -0.9f);
+  glEnd();
+}
+
+
+void render(int width, int height)
 {
+  //GLfloat aspect = (GLfloat)width / (GLfloat)height;
   glViewport(0, 0, width, height);
-  glEnable(GL_CULL_FACE);
-  glFrontFace(GL_CCW);
-  glCullFace(GL_BACK);
+  // glEnable(GL_CULL_FACE);
+  glDisable(GL_CULL_FACE);
+  // glFrontFace(GL_CCW);
+  // glCullFace(GL_BACK);
+  //
+  
+  glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  // Fist init standard assets in this order
-  if (ShaderManager::getInstance().initStandardShader() == false)
-  {
-    std::cout << "Initialization of standard shader failed." << std::endl;
-    return false;
-  }
-  cout << "Shaders loaded." << endl;
-  MeshManager::getInstance().initStandardMeshes();
-  TextureManager::getInstance().initStandardTextures();
-  MaterialManager::getInstance().initStandardMaterials();
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, width, height, 0, -10, 10);
 
-  // renderer
-  renderer = std::unique_ptr<SceneRenderer>(new SceneRenderer(width, height));
-
-  // graph
-  root = std::unique_ptr<SceneObject>(new SceneObject("Root"));
-
-  // load resources from hard disk
-  MeshPtr meshSphere;
-  try
-  {
-    meshSphere = MeshManager::getInstance().load(
-        "Sphere", "D:\\Eigene Daten\\Dokumente\\3D Modelle\\isosphere.obj");
-  }
-  catch (std::exception const & exception)
-  {
-    std::cout << exception.what() << std::endl;
-    return false;
-  }
-  catch (...)
-  {
-    std::cout << "Unknown exception in Init()." << std::endl;
-    return false;
-  }
-
-  // plane
-  //MeshPtr meshPlane = MeshManager::getInstance().getPlane();
-  //SceneObject * floor = new SceneObject("Floor");
-  //PBRMaterialPtr pMaterial = PBRMaterialPtr(new PBRMaterial);
-  //floor->addComponent(new MeshRenderer(meshPlane, pMaterial));
-  //root->addChild(floor);
-
-  // random
-  float const terrainSize = 10.0f;
-  std::random_device rd;
-  std::mt19937 mt(rd());
-  std::uniform_real_distribution<float> dis(0.0f, terrainSize);
-
-  // apples
-  SceneObject * apples = new SceneObject("Apples");
-  root->addChild(apples);
-  uint32_t numApples = 20;
-  PBRMaterialPtr appleMat =
-      MaterialManager::getInstance().create<PBRMaterial>("AppleMaterial");
-  appleMat->setAlbedo(0.8f, 0.2f, 0.2f);
-  for (uint32_t i = 0; i < numApples; ++i)
-  {
-    SceneObject * apple = new SceneObject("Apple");
-    apple->getTransform()->setPosition({dis(mt), 0.0f, dis(mt)});
-    apple->getTransform()->setScale({0.5f, 0.5f, 0.5f});
-    apple->addComponent(new MeshRenderer(meshSphere, appleMat));
-    apples->addChild(apple);
-  }
-
-  // individuals
-  SceneObject * individuals = new SceneObject("Individuals");
-  root->addChild(individuals);
-  uint32_t const populationSize = 30;
-  for (uint32_t i = 0; i < populationSize; ++i)
-  {
-    SceneObject * indi = new SceneObject("Indi");
-    PBRMaterialPtr indiMat = PBRMaterialPtr(new PBRMaterial);
-    indi->addComponent(new MeshRenderer(meshSphere, indiMat));
-    indi->addComponent(new Individual());
-    indi->getComponent<Individual>()->setApples(apples);
-    indi->getComponent<Individual>()->setIndividuals(individuals);
-    indi->getTransform()->setPosition({dis(mt), 0.0f, dis(mt)});
-    indi->getTransform()->setScale({0.5f, 0.5f, 0.5f});
-    individuals->addChild(indi);
-  }
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  gluLookAt(0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
 
 
 
-  // camera
-  SceneObject * cameraObj = new SceneObject("Camera");
-  camera = new Camera(width, height, 0.1f, 100.0f, 80.0f);
-  cameraObj->addComponent(camera);
-  cameraObj->addComponent(new CameraController);
-  cameraObj->getTransform()->setPosition(
-      {terrainSize / 2.0f, terrainSize / 2.0f, terrainSize / 2.0f});
-  root->addChild(cameraObj);
 
-  // lights
+  glBegin(GL_QUADS);
+  glColor3i(255, 255, 255);
+  glVertex3i(100, 100, 1);
+  glColor3i(255, 255, 255);
+  glVertex3i(100, 200, 1);
+  glColor3i(255, 255, 255);
+  glVertex3i(200, 200, 1);
+  glColor3i(255, 255, 255);
+  glVertex3i(200, 100, 1);
+  glEnd();
 
-  SceneObject * pDirectionalLight1 = new SceneObject("DirectionalLight");
-  pDirectionalLight1->addComponent(new Light(Light::DIRECTIONAL));
-  pDirectionalLight1->getComponent<Light>()->setIntensity(1.0f);
-  pDirectionalLight1->getComponent<Light>()->setColor(
-      {237.0f / 255.0f, 237.0f / 255.0f, 237.0f / 255.0f});
-  pDirectionalLight1->getTransform()->rotate(45.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-  root->addChild(pDirectionalLight1);
+  //glBegin(GL_QUADS);
+  //glVertex3i(100, 100, 1);
 
-  //SceneObject * pDirectionalLight2 = new SceneObject("DirectionalLight");
-  //pDirectionalLight2->addComponent(new Light(Light::DIRECTIONAL));
-  //pDirectionalLight2->getComponent<Light>()->setIntensity(0.4f);
-  //pDirectionalLight2->getComponent<Light>()->setColor(
-  //    {221.0f / 255.0f, 237.0f / 255.0f, 240.0f / 255.0f});
-  //pDirectionalLight2->getTransform()->rotate(180.0f+45.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-  //root->addChild(pDirectionalLight2);
+  //glVertex3i(200, 100, 1);
 
-  CHECKGLERROR();
-  return true;
-}
+  //glVertex3i(200, 200, 1);
 
-void hackyUpdates(double deltaTime)
-{
-  static float const terrainSize = 10.0f;
-  static std::random_device rd;
-  static std::mt19937 mt(rd());
-  static std::uniform_real_distribution<float> dis(0.0f, terrainSize);
-  static double passedTime = 0.0;
-  static double newAppleTime = 7.0;
-
-  passedTime += deltaTime;
-  if (passedTime >= newAppleTime)
-  {
-    passedTime -= newAppleTime;
-    SceneObject * apples = root->getChild("Apples");
-    uint32_t numApples = 2;
-    for (uint32_t i = 0; i < numApples; ++i)
-    {
-      SceneObject * apple = new SceneObject("Apple");
-      apple->getTransform()->setPosition({dis(mt), 0.0f, dis(mt)});
-      apple->getTransform()->setScale({0.5f, 0.5f, 0.5f});
-      apple->addComponent(new MeshRenderer(
-          MeshManager::getInstance().get("Sphere"),
-          MaterialManager::getInstance().get<PBRMaterial>("AppleMaterial")));
-      apples->addChild(apple);
-    }
-  }
-
-
+  //glVertex3i(100, 200, 1);
+  //glEnd();
 }
 
 int main()
@@ -218,10 +102,10 @@ int main()
   }
 
   // Create a windowed mode window and its OpenGL context.
-  int const width = 1600;
-  int const height = 1000;
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  int const width = 1400;
+  int const height = 900;
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
   window = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
   if (!window)
@@ -247,13 +131,13 @@ int main()
   }
 
   // Initialize my stuff.
-  if (initGL(width, height) == false)
-  {
-    std::cout << "My initialization failed." << std::endl;
-    glfwTerminate();
-    system("pause");
-    exit(EXIT_FAILURE);
-  }
+  //if (initGL(width, height) == false)
+  //{
+  //  std::cout << "My initialization failed." << std::endl;
+  //  glfwTerminate();
+  //  system("pause");
+  //  exit(EXIT_FAILURE);
+  //}
 
   // Frames per second
   double fpsSum = 0;
@@ -270,12 +154,9 @@ int main()
     glfwPollEvents();
 
     // update
-    root->update(deltaTime);
-    hackyUpdates(deltaTime);
-    SceneObject::updateSceneGraph();
 
     // render
-    renderer->render(root.get());
+    render(width, height);
     CHECKGLERROR();
 
     // Swap front and back buffers

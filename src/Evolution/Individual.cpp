@@ -1,3 +1,4 @@
+#pragma warning(disable : 4201)
 #include "Individual.h"
 #include <Graphics3d/Scene/SceneObject.h>
 #include <Graphics3d\Components\Transform.h>

@@ -6,7 +6,7 @@
       "configurationType": "Debug",
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
-      "cmakeToolchain": "D:\\Repositories\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake",
+      "cmakeToolchain": "D:\\Repositories\\vcpkg2\\scripts\\buildsystems\\vcpkg.cmake",
       "inheritEnvironments": [ "msvc_x64" ]
     },
     {
@@ -15,7 +15,7 @@
       "configurationType": "Release",
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
-      "cmakeToolchain": "D:\\Repositories\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake",
+      "cmakeToolchain": "D:\\Repositories\\vcpkg2\\scripts\\buildsystems\\vcpkg.cmake",
       "inheritEnvironments": [ "msvc_x64" ]
     }
   ]
