@@ -25,7 +25,8 @@ void resizeCallback(GLFWwindow * /*pWindow*/, int width, int height)
   }
 }
 
-void drawRect() {
+void drawRect()
+{
   glBegin(GL_TRIANGLES);       // Each set of 3 vertices form a triangle
   glColor3f(0.0f, 0.0f, 1.0f); // Blue
   glVertex2f(0.1f, -0.6f);
@@ -41,51 +42,62 @@ void drawRect() {
   glEnd();
 }
 
-
 void render(int width, int height)
 {
-  //GLfloat aspect = (GLfloat)width / (GLfloat)height;
+  // GLfloat aspect = (GLfloat)width / (GLfloat)height;
   glViewport(0, 0, width, height);
   // glEnable(GL_CULL_FACE);
   glDisable(GL_CULL_FACE);
   // glFrontFace(GL_CCW);
   // glCullFace(GL_BACK);
   //
-  
-  glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glOrtho(0, width, height, 0, -10, 10);
+  glOrtho(0, width, 0, height, -10, 10);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  gluLookAt(0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
+  // gluLookAt(0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
 
+  glPointSize(20.0f);
+  glBegin(GL_POINTS);
+  // glVertex3f(0.0f, 0.0f, 1.0f);
+  // glVertex3f(-100.5f, -100.5f, 1.0f);
 
+  glColor3f(1.0f, 1.0f, 1.0f);
+  glVertex3f(100.0f, 100.0f, 0.0f);
 
+  glColor3f(1.0f, 0.0f, 0.0f);
+  glVertex3f(200.0f, 100.0f, 0.0f);
 
-  glBegin(GL_QUADS);
-  glColor3i(255, 255, 255);
-  glVertex3i(100, 100, 1);
-  glColor3i(255, 255, 255);
-  glVertex3i(100, 200, 1);
-  glColor3i(255, 255, 255);
-  glVertex3i(200, 200, 1);
-  glColor3i(255, 255, 255);
-  glVertex3i(200, 100, 1);
+  glColor3f(0.0f, 1.0f, 0.0f);
+  glVertex3f(100.0f, 200.0f, 0.0f);
   glEnd();
 
-  //glBegin(GL_QUADS);
-  //glVertex3i(100, 100, 1);
+  // glBegin(GL_QUADS);
+  // glColor3i(255, 255, 255);
+  // glVertex3i(100, 100, 1);
+  // glColor3i(255, 255, 255);
+  // glVertex3i(100, 200, 1);
+  // glColor3i(255, 255, 255);
+  // glVertex3i(200, 200, 1);
+  // glColor3i(255, 255, 255);
+  // glVertex3i(200, 100, 1);
+  // glEnd();
 
-  //glVertex3i(200, 100, 1);
+  // glBegin(GL_QUADS);
+  // glVertex3i(100, 100, 1);
 
-  //glVertex3i(200, 200, 1);
+  // glVertex3i(200, 100, 1);
 
-  //glVertex3i(100, 200, 1);
-  //glEnd();
+  // glVertex3i(200, 200, 1);
+
+  // glVertex3i(100, 200, 1);
+  // glEnd();
 }
 
 int main()
@@ -131,7 +143,7 @@ int main()
   }
 
   // Initialize my stuff.
-  //if (initGL(width, height) == false)
+  // if (initGL(width, height) == false)
   //{
   //  std::cout << "My initialization failed." << std::endl;
   //  glfwTerminate();
