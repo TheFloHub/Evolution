@@ -23,14 +23,15 @@ struct Object
 struct Person : public Object
 {
   virtual ~Person() = default;
-  double m_speed{0.25};
-  double m_sensingRange{10.0};
-  double m_interactionRange{1.0};
+
+  double m_speed{25.0};
+  double m_sensingRange{80.0};
+  double m_interactionRange{20.0};
   double m_size{1.0};
   double m_dirAngle{0.0};
   double m_vitality{200.0};
   double m_vitalityDecreasePerSec{10};
-  double m_reproductionTime{10.0};
+  double m_reproductionTime{20.0};
   double m_reproductionPassedTime{0.0};
 };
 
@@ -39,10 +40,120 @@ struct Apple : public Object
   virtual ~Apple() = default;
 };
 
+int const g_width = 1400;
+int const g_height = 900;
+uint32_t const g_startPopulation = 20;
+uint32_t const g_numNewApples = 16;
+std::vector<Person> g_persons;
+std::vector<Apple> g_apples;
+
+std::random_device g_rd;
+std::mt19937 g_rng(g_rd());
+std::uniform_real_distribution<float> g_xdis(0.0f, static_cast<float>(g_width));
+std::uniform_real_distribution<float> g_ydis(0.0f, static_cast<float>(g_height));
 
 
-void update(double /*deltaTime*/) {
+bool initGL(int width, int height)
+{
+  glViewport(0, 0, width, height);
 
+  // people
+  for (uint32_t i = 0; i < g_startPopulation; ++i)
+  {
+    Person p;
+    p.m_position.x() = g_xdis(g_rng);
+    p.m_position.y() = g_ydis(g_rng);
+    g_persons.emplace_back(p);
+  }
+
+  // apples
+  for (uint32_t i = 0; i < g_numNewApples; ++i)
+  {
+    Apple a;
+    a.m_position.x() = g_xdis(g_rng);
+    a.m_position.y() = g_ydis(g_rng);
+    g_apples.emplace_back(a);
+  }
+
+  return true;
+}
+
+void update(double deltaTime) {
+  static double passedAppleTime = 0.0;
+  static double newAppleTime = 7.0;
+  static std::uniform_real_distribution<float> angleDis(-0.3f, 0.3f);
+
+  // people
+  for (uint32_t pi = 0; pi < g_persons.size(); ++pi)
+  {
+    auto & p = g_persons[pi];
+
+    // vitality and color
+    p.m_vitality -= p.m_vitalityDecreasePerSec * deltaTime;
+
+    // death
+    if (p.m_vitality <= 0.0)
+    {
+      g_persons.erase(std::begin(g_persons) + pi);
+    }
+
+    // movement
+    p.m_dirAngle += angleDis(g_rng);
+    p.m_position.x() += deltaTime * p.m_speed * std::cos(p.m_dirAngle);
+    p.m_position.y() += deltaTime * p.m_speed * std::sin(p.m_dirAngle);
+    p.m_position.x() =
+        std::clamp(p.m_position.x(), 0.0, static_cast<double>(g_width));
+    p.m_position.y() =
+        std::clamp(p.m_position.y(), 0.0, static_cast<double>(g_height));
+
+    // eat apples
+    double const irsq = p.m_interactionRange * p.m_interactionRange;
+    double closestAppleDistance = std::numeric_limits<double>::max();
+    size_t closestAppleIndex = g_apples.size();
+    for (size_t ai = 0; ai < g_apples.size(); ++ai)
+    {
+      double const distSq =
+          (p.m_position - g_apples[ai].m_position).squaredNorm();
+      if (distSq <= irsq && distSq < closestAppleDistance)
+      {
+        closestAppleDistance = distSq;
+        closestAppleIndex = ai;
+      }
+    }
+
+    if (closestAppleIndex < g_apples.size())
+    {
+      g_apples.erase(std::begin(g_apples) + closestAppleIndex);
+      p.m_vitality += 100.0;
+    }
+
+    // reproduction
+    p.m_reproductionPassedTime += deltaTime;
+    if (p.m_reproductionPassedTime >= p.m_reproductionTime)
+    {
+      p.m_reproductionPassedTime -= p.m_reproductionTime;
+      Person newP = p;
+      newP.m_dirAngle = 0.0;
+      newP.m_vitality = 200.0;
+      newP.m_reproductionPassedTime = 0.0;
+      g_persons.emplace_back(newP);
+    }
+  }
+  // end people
+
+  // new apples
+  passedAppleTime += deltaTime;
+  if (passedAppleTime >= newAppleTime)
+  {
+    passedAppleTime -= newAppleTime;
+    for (uint32_t i = 0; i < g_numNewApples; ++i)
+    {
+      Apple a;
+      a.m_position.x() = g_xdis(g_rng);
+      a.m_position.y() = g_ydis(g_rng);
+      g_apples.emplace_back(a);
+    }
+  }
 }
 
 void render(int width, int height)
@@ -64,15 +175,37 @@ void render(int width, int height)
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  glPointSize(20.0f);
+
+  // persons
+  glPointSize(14.0f);
   glBegin(GL_POINTS);
-  glColor3f(1.0f, 1.0f, 1.0f);
-  glVertex3f(100.0f, 100.0f, 0.0f);
-  glColor3f(1.0f, 0.0f, 0.0f);
-  glVertex3f(200.0f, 100.0f, 0.0f);
-  glColor3f(0.0f, 1.0f, 0.0f);
-  glVertex3f(100.0f, 200.0f, 0.0f);
+  for (auto const & p : g_persons)
+  {
+    double const c = p.m_vitality / 255.0;
+    glColor3d(1.0, c, c);
+    glVertex3d(p.m_position.x(), p.m_position.y(), 0.0);
+  }
   glEnd();
+
+  // apples
+  glPointSize(7.0f);
+  glBegin(GL_POINTS);
+  glColor3f(0.2f, 0.75f, 0.1f);
+  for (auto const & a : g_apples)
+  {
+    glVertex3d(a.m_position.x(), a.m_position.y(), 0.0);
+  }
+  glEnd();
+
+  //glPointSize(20.0f);
+  //glBegin(GL_POINTS);
+  //glColor3f(1.0f, 1.0f, 1.0f);
+  //glVertex3f(100.0f, 100.0f, 0.0f);
+  //glColor3f(1.0f, 0.0f, 0.0f);
+  //glVertex3f(200.0f, 100.0f, 0.0f);
+  //glColor3f(0.0f, 1.0f, 0.0f);
+  //glVertex3f(100.0f, 200.0f, 0.0f);
+  //glEnd();
 }
 
 void errorCallback(int error, const char * description)
@@ -101,12 +234,11 @@ int main()
   }
 
   // Create a windowed mode window and its OpenGL context.
-  int const width = 1400;
-  int const height = 900;
+
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-  window = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
+  window = glfwCreateWindow(g_width, g_height, "Hello World", NULL, NULL);
   if (!window)
   {
     cout << "GLFW couldn't create a window." << endl;
@@ -129,14 +261,14 @@ int main()
     exit(EXIT_FAILURE);
   }
 
-  // Initialize my stuff.
-  // if (initGL(width, height) == false)
-  //{
-  //  std::cout << "My initialization failed." << std::endl;
-  //  glfwTerminate();
-  //  system("pause");
-  //  exit(EXIT_FAILURE);
-  //}
+   //Initialize my stuff.
+  if (initGL(g_width, g_height) == false)
+  {
+    std::cout << "My initialization failed." << std::endl;
+    glfwTerminate();
+    system("pause");
+    exit(EXIT_FAILURE);
+  }
 
   // Frames per second
   double fpsSum = 0;
@@ -156,7 +288,7 @@ int main()
     update(deltaTime);
 
     // render
-    render(width, height);
+    render(g_width, g_height);
     CHECKGLERROR();
 
     // Swap front and back buffers
