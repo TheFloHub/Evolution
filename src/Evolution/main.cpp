@@ -1,8 +1,8 @@
 #pragma warning(disable : 4201)
 #include <gl/glew.h>
-#include <GLFW/glfw3.h>
 #include "Graphics3d/GlInfo.h"
 #include "Graphics3d/Input/InputManager.h"
+#include <GLFW/glfw3.h>
 #include <Math/MathTypes.h>
 #include <iostream>
 #include <random>
@@ -14,17 +14,10 @@ using namespace std;
 using namespace g3d;
 using namespace math;
 
-struct Object
+struct Person
 {
-  virtual ~Object() = default;
   Vector2d m_position{0.0, 0.0};
-};
-
-struct Person : public Object
-{
-  virtual ~Person() = default;
-
-  double m_speed{25.0};
+  double m_speed{50.0};
   double m_sensingRange{80.0};
   double m_interactionRange{20.0};
   double m_size{1.0};
@@ -35,23 +28,110 @@ struct Person : public Object
   double m_reproductionPassedTime{0.0};
 };
 
-struct Apple : public Object
+struct Apple
 {
-  virtual ~Apple() = default;
+  Vector2d m_position{0.0, 0.0};
 };
 
+// gui
 int const g_width = 1400;
 int const g_height = 900;
+int const g_yStart = 100;
+
+// population
 uint32_t const g_startPopulation = 20;
 uint32_t const g_numNewApples = 16;
 std::vector<Person> g_persons;
 std::vector<Apple> g_apples;
 
+// population chart
+struct PopulationCounter
+{
+  PopulationCounter(double const timeDiscretization, size_t const bufferSize)
+      : m_timeDiscretization(timeDiscretization), m_chart(bufferSize, 0)
+  {
+  }
+
+  // TODO: actually scale count with time and add parts to the next count
+  // this one assumes that framerate stays constant and ignores time overflow
+  void add(double deltaTime, size_t count)
+  {
+    m_passedTime += deltaTime;
+    m_totalCount += count;
+    ++m_numCounts;
+    if (m_passedTime >= m_timeDiscretization)
+    {
+      m_chart[m_index] = static_cast<uint32_t>(m_totalCount / m_numCounts);
+      ++m_index;
+      m_passedTime = 0.0;
+      m_totalCount = 0;
+      m_numCounts = 0;
+      if (m_index >= m_chart.size())
+      {
+        cout << "Population buffer overflow!" << endl; 
+        m_index = 0;
+        m_filled = true;
+      }
+    }
+  }
+
+  void render(int const startY, int const width, int const height)
+  {
+    if (m_index == 0 && !m_filled)
+    {
+      return;
+    }
+
+    uint32_t const maxCount =
+        *std::max_element(std::begin(m_chart), std::end(m_chart));
+    if (maxCount == 0)
+    {
+      return;
+    }
+    double const yScale =
+        static_cast<double>(height) / static_cast<double>(maxCount);
+
+    if (m_index == 0)
+    {
+        // TODO:
+      return;
+    }
+    double const xScale = 
+        static_cast<double>(width) / static_cast<double>(m_index);
+
+    glBegin(GL_QUADS);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    double lastX = 0.0;
+    for (int i = 0; i < m_index; ++i)
+    {
+      double const x = (i + 1) * xScale;
+      double const y = startY + yScale * static_cast<double>(m_chart[i]);
+      glVertex3d(lastX, startY, 0.0);
+      glVertex3d(x, startY, 0.0);
+      glVertex3d(x, y, 0.0);
+      glVertex3d(lastX, y, 0.0);
+      lastX = x;
+    }
+    glEnd();
+  }
+
+  double const m_timeDiscretization;
+  double m_passedTime{0.0};
+  size_t m_totalCount{0};
+  size_t m_numCounts{0};
+  std::vector<uint32_t> m_chart;
+  size_t m_index{0};
+  bool m_filled{false};
+};
+
+PopulationCounter g_populationPersons(1.0, g_width);
+
+// random
 std::random_device g_rd;
 std::mt19937 g_rng(g_rd());
 std::uniform_real_distribution<float> g_xdis(0.0f, static_cast<float>(g_width));
-std::uniform_real_distribution<float> g_ydis(0.0f, static_cast<float>(g_height));
-
+std::uniform_real_distribution<float> g_ydis(static_cast<float>(g_yStart),
+                                             static_cast<float>(g_height));
 
 bool initGL(int width, int height)
 {
@@ -78,10 +158,14 @@ bool initGL(int width, int height)
   return true;
 }
 
-void update(double deltaTime) {
+void update(double deltaTime)
+{
   static double passedAppleTime = 0.0;
   static double newAppleTime = 7.0;
   static std::uniform_real_distribution<float> angleDis(-0.3f, 0.3f);
+
+  // population counters
+  g_populationPersons.add(deltaTime, g_persons.size());
 
   // people
   for (uint32_t pi = 0; pi < g_persons.size(); ++pi)
@@ -104,7 +188,8 @@ void update(double deltaTime) {
     p.m_position.x() =
         std::clamp(p.m_position.x(), 0.0, static_cast<double>(g_width));
     p.m_position.y() =
-        std::clamp(p.m_position.y(), 0.0, static_cast<double>(g_height));
+        std::clamp(p.m_position.y(), static_cast<double>(g_yStart),
+                   static_cast<double>(g_height));
 
     // eat apples
     double const irsq = p.m_interactionRange * p.m_interactionRange;
@@ -154,17 +239,13 @@ void update(double deltaTime) {
       g_apples.emplace_back(a);
     }
   }
+
 }
 
 void render(int width, int height)
 {
-  // GLfloat aspect = (GLfloat)width / (GLfloat)height;
   glViewport(0, 0, width, height);
-  // glEnable(GL_CULL_FACE);
   glDisable(GL_CULL_FACE);
-  // glFrontFace(GL_CCW);
-  // glCullFace(GL_BACK);
-  
 
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -174,7 +255,6 @@ void render(int width, int height)
   glOrtho(0, width, 0, height, -10, 10);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-
 
   // persons
   glPointSize(14.0f);
@@ -197,15 +277,15 @@ void render(int width, int height)
   }
   glEnd();
 
-  //glPointSize(20.0f);
-  //glBegin(GL_POINTS);
-  //glColor3f(1.0f, 1.0f, 1.0f);
-  //glVertex3f(100.0f, 100.0f, 0.0f);
-  //glColor3f(1.0f, 0.0f, 0.0f);
-  //glVertex3f(200.0f, 100.0f, 0.0f);
-  //glColor3f(0.0f, 1.0f, 0.0f);
-  //glVertex3f(100.0f, 200.0f, 0.0f);
-  //glEnd();
+  // charts
+  g_populationPersons.render(0, g_width, g_yStart);
+
+  // chart separation
+  glBegin(GL_LINES);
+  glColor3f(1.0f, 0.0f, 1.0f);
+  glVertex3i(0, g_yStart, 0);
+  glVertex3i(g_width, g_yStart, 0);
+  glEnd();
 }
 
 void errorCallback(int error, const char * description)
@@ -261,7 +341,7 @@ int main()
     exit(EXIT_FAILURE);
   }
 
-   //Initialize my stuff.
+  // Initialize my stuff.
   if (initGL(g_width, g_height) == false)
   {
     std::cout << "My initialization failed." << std::endl;
