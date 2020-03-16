@@ -14,34 +14,52 @@ using namespace std;
 using namespace g3d;
 using namespace math;
 
+// gui
+int const g_width = 600;
+int const g_height = 700;
+int const g_yStart = 100;
+
+// population
+uint32_t const g_startPopulation = 20;
+uint32_t const g_numNewApples = 20;
+double const g_newAppleTime = 5.0;
+
+double const g_startEnergy = 100.0;
+
 struct Person
 {
   Vector2d m_position{0.0, 0.0};
-  double m_speed{50.0};
-  double m_sensingRange{80.0};
+
+  // TODO: person might eat other person and get some of their energy (factor /
+  // digestion efficiency)
+
+  // TODO: speed should be quadratic for energy loss
+  double m_speed{20.0};
+  // double m_sensingRange{80.0};
   double m_interactionRange{20.0};
-  double m_size{1.0};
+  // double m_size{1.0};
+  // size will increase the m_energyFixedLossPerSec and
+  // m_engergySpeedLossFactor, maybe another members though
   double m_dirAngle{0.0};
-  double m_vitality{200.0};
-  double m_vitalityDecreasePerSec{10};
-  double m_reproductionProbability{0.03};
-  double m_reproductionTime{1.0};
+
+  double m_energy{g_startEnergy};
+  double m_energyFixedLossPerSec{0.0};
+  double m_engergySpeedLossFactor{1.0};
+
+  // double m_vitality{200.0};
+  // double m_vitalityDecreasePerSec{10};
+
+  double m_reproductionProbability{1.0};
+  double m_reproductionTime{10.0};
   double m_reproductionPassedTime{0.0};
 };
 
 struct Apple
 {
   Vector2d m_position{0.0, 0.0};
+  double m_energy{g_startEnergy};
 };
 
-// gui
-int const g_width = 1400;
-int const g_height = 900;
-int const g_yStart = 100;
-
-// population
-uint32_t const g_startPopulation = 20;
-uint32_t const g_numNewApples = 16;
 std::vector<Person> g_persons;
 std::vector<Apple> g_apples;
 
@@ -70,7 +88,7 @@ struct PopulationCounter
       cout << m_chart[m_index - 1] << endl;
       if (m_index >= m_chart.size())
       {
-        cout << "Population buffer overflow!" << endl; 
+        cout << "Population buffer overflow!" << endl;
         m_index = 0;
         m_filled = true;
       }
@@ -95,10 +113,10 @@ struct PopulationCounter
 
     if (m_index == 0)
     {
-        // TODO:
+      // TODO:
       return;
     }
-    double const xScale = 
+    double const xScale =
         static_cast<double>(width) / static_cast<double>(m_index);
 
     glBegin(GL_QUADS);
@@ -135,6 +153,34 @@ std::uniform_real_distribution<float> g_xdis(0.0f, static_cast<float>(g_width));
 std::uniform_real_distribution<float> g_ydis(static_cast<float>(g_yStart),
                                              static_cast<float>(g_height));
 
+// TODO: add a tracker instead of a function
+// void plotAttribute(std::vector<Person> const & population,
+//                   std::function<double(Person const&)> const & getter,
+//                   int const startX,
+//                   int conststartY, int const width, int const height,
+//    double const minValue, double const maxValue)
+//{
+//  double minV = std::numeric_limits<double>::max();
+//  double maxV = std::numeric_limits<double>::lowest();
+//  for (auto const& person : population)
+//  {
+//    double const v = getter(person);
+//    if (v > maxV)
+//    {
+//      maxV = v;
+//    }
+//    if (v < minV)
+//    {
+//      minV = v;
+//    }
+//  }
+//
+//
+//
+//
+//
+//}
+
 bool initGL(int width, int height)
 {
   glViewport(0, 0, width, height);
@@ -163,26 +209,19 @@ bool initGL(int width, int height)
 void update(double deltaTime)
 {
   static double passedAppleTime = 0.0;
-  static double newAppleTime = 7.0;
   static std::uniform_real_distribution<float> angleDis(-0.3f, 0.3f);
   static std::uniform_real_distribution<double> reproDis(0.0, 1.0f);
 
   // population counters
   g_populationPersons.add(deltaTime, g_persons.size());
-  
+
+  // TODO: think about order, deltaTime is from last frame
   // people
-  for (uint32_t pi = 0; pi < g_persons.size(); ++pi)
+  std::vector<size_t> died;
+  std::vector<Person> born;
+  for (size_t pi = 0; pi < g_persons.size(); ++pi)
   {
     auto & p = g_persons[pi];
-
-    // vitality and color
-    p.m_vitality -= p.m_vitalityDecreasePerSec * deltaTime;
-
-    // death
-    if (p.m_vitality <= 0.0)
-    {
-      g_persons.erase(std::begin(g_persons) + pi);
-    }
 
     // movement
     p.m_dirAngle += angleDis(g_rng);
@@ -211,8 +250,9 @@ void update(double deltaTime)
 
     if (closestAppleIndex < g_apples.size())
     {
-      g_apples.erase(std::begin(g_apples) + closestAppleIndex);
-      p.m_vitality += 100.0;
+      auto const apple = std::begin(g_apples) + closestAppleIndex;
+      p.m_energy += apple->m_energy;
+      g_apples.erase(apple);
     }
 
     // reproduction
@@ -224,19 +264,43 @@ void update(double deltaTime)
       {
         Person newP = p;
         newP.m_dirAngle = 0.0;
-        newP.m_vitality = 200.0;
+        newP.m_energy = g_startEnergy;
         newP.m_reproductionPassedTime = 0.0;
-        g_persons.emplace_back(newP);
+        //std::uniform_real_distribution<double> speedMutationDis(
+        //    0.7 * p.m_speed, 1.3 * p.m_speed);
+        //newP.m_speed = speedMutationDis(g_rng);
+        born.emplace_back(newP);
       }
     }
+
+    // energy
+    p.m_energy -=
+        (p.m_speed * p.m_engergySpeedLossFactor + p.m_energyFixedLossPerSec) *
+        deltaTime;
+
+    // death
+    if (p.m_energy <= 0.0)
+    {
+      died.emplace_back(pi);
+    }
   }
+
+  for (auto riter = std::rbegin(died); riter != std::rend(died); ++riter)
+  {
+    g_persons.erase(std::begin(g_persons) + (*riter));
+  }
+  for (auto & b : born)
+  {
+    g_persons.emplace_back(b);
+  }
+
   // end people
 
   // new apples
   passedAppleTime += deltaTime;
-  if (passedAppleTime >= newAppleTime)
+  if (passedAppleTime >= g_newAppleTime)
   {
-    passedAppleTime -= newAppleTime;
+    passedAppleTime -= g_newAppleTime;
     for (uint32_t i = 0; i < g_numNewApples; ++i)
     {
       Apple a;
@@ -245,7 +309,6 @@ void update(double deltaTime)
       g_apples.emplace_back(a);
     }
   }
-
 }
 
 void render(int width, int height)
@@ -267,7 +330,8 @@ void render(int width, int height)
   glBegin(GL_POINTS);
   for (auto const & p : g_persons)
   {
-    double const c = p.m_vitality / 255.0;
+    double const c = p.m_energy / 255.0;
+    //double const c = (p.m_speed - 25.0) / 75.0;
     glColor3d(1.0, c, c);
     glVertex3d(p.m_position.x(), p.m_position.y(), 0.0);
   }
@@ -326,6 +390,7 @@ int main()
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
   window = glfwCreateWindow(g_width, g_height, "Hello World", NULL, NULL);
+  glfwSetWindowPos(window, 600, 100);
   if (!window)
   {
     cout << "GLFW couldn't create a window." << endl;
