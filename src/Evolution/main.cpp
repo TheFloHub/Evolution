@@ -24,7 +24,8 @@ struct Person
   double m_dirAngle{0.0};
   double m_vitality{200.0};
   double m_vitalityDecreasePerSec{10};
-  double m_reproductionTime{20.0};
+  double m_reproductionProbability{0.03};
+  double m_reproductionTime{1.0};
   double m_reproductionPassedTime{0.0};
 };
 
@@ -66,6 +67,7 @@ struct PopulationCounter
       m_passedTime = 0.0;
       m_totalCount = 0;
       m_numCounts = 0;
+      cout << m_chart[m_index - 1] << endl;
       if (m_index >= m_chart.size())
       {
         cout << "Population buffer overflow!" << endl; 
@@ -163,10 +165,11 @@ void update(double deltaTime)
   static double passedAppleTime = 0.0;
   static double newAppleTime = 7.0;
   static std::uniform_real_distribution<float> angleDis(-0.3f, 0.3f);
+  static std::uniform_real_distribution<double> reproDis(0.0, 1.0f);
 
   // population counters
   g_populationPersons.add(deltaTime, g_persons.size());
-
+  
   // people
   for (uint32_t pi = 0; pi < g_persons.size(); ++pi)
   {
@@ -217,11 +220,14 @@ void update(double deltaTime)
     if (p.m_reproductionPassedTime >= p.m_reproductionTime)
     {
       p.m_reproductionPassedTime -= p.m_reproductionTime;
-      Person newP = p;
-      newP.m_dirAngle = 0.0;
-      newP.m_vitality = 200.0;
-      newP.m_reproductionPassedTime = 0.0;
-      g_persons.emplace_back(newP);
+      if (reproDis(g_rng) <= p.m_reproductionProbability)
+      {
+        Person newP = p;
+        newP.m_dirAngle = 0.0;
+        newP.m_vitality = 200.0;
+        newP.m_reproductionPassedTime = 0.0;
+        g_persons.emplace_back(newP);
+      }
     }
   }
   // end people
@@ -300,6 +306,7 @@ void resizeCallback(GLFWwindow * /*pWindow*/, int width, int height)
   {
   }
 }
+
 int main()
 {
   GLFWwindow * window = nullptr;
