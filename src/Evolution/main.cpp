@@ -35,7 +35,7 @@ struct Person
 
   // TODO: speed should be quadratic for energy loss
   double m_speed{20.0};
-  // double m_sensingRange{80.0};
+  double m_sensingRange{50.0};
   double m_interactionRange{20.0};
   // double m_size{1.0};
   // size will increase the m_energyFixedLossPerSec and
@@ -223,32 +223,43 @@ void update(double deltaTime)
   {
     auto & p = g_persons[pi];
 
-    // movement
-    p.m_dirAngle += angleDis(g_rng);
-    p.m_position.x() += deltaTime * p.m_speed * std::cos(p.m_dirAngle);
-    p.m_position.y() += deltaTime * p.m_speed * std::sin(p.m_dirAngle);
-    p.m_position.x() =
-        std::clamp(p.m_position.x(), 0.0, static_cast<double>(g_width));
-    p.m_position.y() =
-        std::clamp(p.m_position.y(), static_cast<double>(g_yStart),
-                   static_cast<double>(g_height));
-
-    // eat apples
-    double const irsq = p.m_interactionRange * p.m_interactionRange;
+    // find closest apple
     double closestAppleDistance = std::numeric_limits<double>::max();
     size_t closestAppleIndex = g_apples.size();
     for (size_t ai = 0; ai < g_apples.size(); ++ai)
     {
       double const distSq =
           (p.m_position - g_apples[ai].m_position).squaredNorm();
-      if (distSq <= irsq && distSq < closestAppleDistance)
+      if (distSq < closestAppleDistance)
       {
         closestAppleDistance = distSq;
         closestAppleIndex = ai;
       }
     }
 
-    if (closestAppleIndex < g_apples.size())
+    // movement
+    p.m_dirAngle += angleDis(g_rng);
+    double mdx = std::cos(p.m_dirAngle);
+    double mdy = std::sin(p.m_dirAngle);
+    double const srsq = p.m_sensingRange * p.m_sensingRange;
+    if (closestAppleDistance < srsq)
+    {
+      auto const apple = std::begin(g_apples) + closestAppleIndex;
+      Vector2d const dxy = (apple->m_position - p.m_position).normalized();
+      mdx = dxy.x();
+      mdy = dxy.y();
+    }
+    p.m_position.x() += deltaTime * p.m_speed * mdx;
+    p.m_position.y() += deltaTime * p.m_speed * mdy;
+    p.m_position.x() =
+        std::clamp(p.m_position.x(), 0.0, static_cast<double>(g_width));
+    p.m_position.y() =
+        std::clamp(p.m_position.y(), static_cast<double>(g_yStart),
+                   static_cast<double>(g_height));
+
+    // eat apple
+    double const irsq = p.m_interactionRange * p.m_interactionRange;
+    if (closestAppleIndex < g_apples.size() && closestAppleDistance < irsq)
     {
       auto const apple = std::begin(g_apples) + closestAppleIndex;
       p.m_energy += apple->m_energy;
@@ -266,9 +277,9 @@ void update(double deltaTime)
         newP.m_dirAngle = 0.0;
         newP.m_energy = g_startEnergy;
         newP.m_reproductionPassedTime = 0.0;
-        //std::uniform_real_distribution<double> speedMutationDis(
-        //    0.7 * p.m_speed, 1.3 * p.m_speed);
-        //newP.m_speed = speedMutationDis(g_rng);
+         std::uniform_real_distribution<double> speedMutationDis(
+            0.7 * p.m_speed, 1.3 * p.m_speed);
+         newP.m_speed = speedMutationDis(g_rng);
         born.emplace_back(newP);
       }
     }
@@ -331,7 +342,7 @@ void render(int width, int height)
   for (auto const & p : g_persons)
   {
     double const c = p.m_energy / 255.0;
-    //double const c = (p.m_speed - 25.0) / 75.0;
+    // double const c = (p.m_speed - 25.0) / 75.0;
     glColor3d(1.0, c, c);
     glVertex3d(p.m_position.x(), p.m_position.y(), 0.0);
   }
