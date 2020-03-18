@@ -19,12 +19,16 @@ int const g_width = 600;
 int const g_height = 700;
 int const g_yStart = 100;
 
-// population
+// people population
 uint32_t const g_startPopulation = 20;
-uint32_t const g_numNewApples = 20;
-double const g_newAppleTime = 5.0;
-
 double const g_startEnergy = 100.0;
+
+// apples
+uint32_t const g_numNewApples = 5;
+double const g_newAppleTime = 1.0;
+double const g_appleLifeTime = 10.0;
+double const g_appleEnergy = g_startEnergy;
+
 
 struct Person
 {
@@ -56,8 +60,12 @@ struct Person
 
 struct Apple
 {
+  // TODO: energy = lifetime?
+  // energy decreases, giving also less energy when eaten
   Vector2d m_position{0.0, 0.0};
-  double m_energy{g_startEnergy};
+  double m_lifeTime{g_appleLifeTime};
+  double m_passedTime{0.0};
+  double m_energy{g_appleEnergy};
 };
 
 std::vector<Person> g_persons;
@@ -195,7 +203,9 @@ bool initGL(int width, int height)
   }
 
   // apples
-  for (uint32_t i = 0; i < g_numNewApples; ++i)
+  uint32_t const numApplesStart = static_cast<uint32_t>(
+      static_cast<double>(g_numNewApples) * g_appleLifeTime / g_newAppleTime);
+  for (uint32_t i = 0; i < numApplesStart; ++i)
   {
     Apple a;
     a.m_position.x() = g_xdis(g_rng);
@@ -307,6 +317,21 @@ void update(double deltaTime)
 
   // end people
 
+  // apple decay
+  auto appleIter = std::begin(g_apples);
+  while (appleIter != std::end(g_apples))
+  {
+    appleIter->m_passedTime += deltaTime;
+    if (appleIter->m_passedTime >= appleIter->m_lifeTime)
+    {
+      appleIter = g_apples.erase(appleIter);
+    }
+    else
+    {
+      ++appleIter;
+    }
+  }
+
   // new apples
   passedAppleTime += deltaTime;
   if (passedAppleTime >= g_newAppleTime)
@@ -341,8 +366,8 @@ void render(int width, int height)
   glBegin(GL_POINTS);
   for (auto const & p : g_persons)
   {
-    double const c = p.m_energy / 255.0;
-    // double const c = (p.m_speed - 25.0) / 75.0;
+    //double const c = p.m_energy / 255.0;
+    double const c = p.m_speed / 100.0;
     glColor3d(1.0, c, c);
     glVertex3d(p.m_position.x(), p.m_position.y(), 0.0);
   }
