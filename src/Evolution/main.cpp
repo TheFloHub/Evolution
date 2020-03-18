@@ -21,17 +21,19 @@ int const g_yStart = 100;
 
 // people population
 uint32_t const g_startPopulation = 20;
-double const g_startEnergy = 100.0;
+double const g_personMaxEnergy = 200.0;
 
 // apples
-uint32_t const g_numNewApples = 5;
-double const g_newAppleTime = 1.0;
-double const g_appleLifeTime = 10.0;
-double const g_appleEnergy = g_startEnergy;
+uint32_t const g_numNewApples = 60;
+double const g_newAppleTime = 5.0;
+double const g_appleLifeTime = 5.0;
+double const g_appleEnergy = 25;
 
 
 struct Person
 {
+  bool isHungry() { return m_energy < m_maxEnergy / 2.0; }
+
   Vector2d m_position{0.0, 0.0};
 
   // TODO: person might eat other person and get some of their energy (factor /
@@ -39,14 +41,15 @@ struct Person
 
   // TODO: speed should be quadratic for energy loss
   double m_speed{20.0};
-  double m_sensingRange{50.0};
+  double m_sensingRange{60.0};
   double m_interactionRange{20.0};
   // double m_size{1.0};
   // size will increase the m_energyFixedLossPerSec and
   // m_engergySpeedLossFactor, maybe another members though
   double m_dirAngle{0.0};
 
-  double m_energy{g_startEnergy};
+  double m_maxEnergy{g_personMaxEnergy};
+  double m_energy{m_maxEnergy};
   double m_energyFixedLossPerSec{0.0};
   double m_engergySpeedLossFactor{1.0};
 
@@ -252,7 +255,7 @@ void update(double deltaTime)
     double mdx = std::cos(p.m_dirAngle);
     double mdy = std::sin(p.m_dirAngle);
     double const srsq = p.m_sensingRange * p.m_sensingRange;
-    if (closestAppleDistance < srsq)
+    if (p.isHungry() && closestAppleDistance < srsq)
     {
       auto const apple = std::begin(g_apples) + closestAppleIndex;
       Vector2d const dxy = (apple->m_position - p.m_position).normalized();
@@ -269,10 +272,12 @@ void update(double deltaTime)
 
     // eat apple
     double const irsq = p.m_interactionRange * p.m_interactionRange;
-    if (closestAppleIndex < g_apples.size() && closestAppleDistance < irsq)
+    if (p.isHungry() && closestAppleIndex < g_apples.size() &&
+        closestAppleDistance < irsq)
     {
       auto const apple = std::begin(g_apples) + closestAppleIndex;
       p.m_energy += apple->m_energy;
+      p.m_energy = std::min(p.m_maxEnergy, p.m_energy);
       g_apples.erase(apple);
     }
 
@@ -285,11 +290,11 @@ void update(double deltaTime)
       {
         Person newP = p;
         newP.m_dirAngle = 0.0;
-        newP.m_energy = g_startEnergy;
+        newP.m_energy = g_personMaxEnergy;
         newP.m_reproductionPassedTime = 0.0;
-         std::uniform_real_distribution<double> speedMutationDis(
-            0.7 * p.m_speed, 1.3 * p.m_speed);
-         newP.m_speed = speedMutationDis(g_rng);
+         //std::uniform_real_distribution<double> speedMutationDis(
+         //   0.7 * p.m_speed, 1.3 * p.m_speed);
+         //newP.m_speed = speedMutationDis(g_rng);
         born.emplace_back(newP);
       }
     }
@@ -366,8 +371,8 @@ void render(int width, int height)
   glBegin(GL_POINTS);
   for (auto const & p : g_persons)
   {
-    //double const c = p.m_energy / 255.0;
-    double const c = p.m_speed / 100.0;
+    double const c = p.m_energy / p.m_maxEnergy;
+    //double const c = p.m_speed / 100.0;
     glColor3d(1.0, c, c);
     glVertex3d(p.m_position.x(), p.m_position.y(), 0.0);
   }
@@ -407,8 +412,91 @@ void resizeCallback(GLFWwindow * /*pWindow*/, int width, int height)
   }
 }
 
-int main()
-{
+void runFastMode() {
+  GLFWwindow * window = nullptr;
+  glfwSetErrorCallback(errorCallback);
+
+  // Initialize GLFW library.
+  if (glfwInit() == false)
+  {
+    cout << "GLFW initialization failed." << endl;
+    system("pause");
+    exit(EXIT_FAILURE);
+  }
+
+  // Create a windowed mode window and its OpenGL context.
+
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
+  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+  window = glfwCreateWindow(g_width, g_height, "Hello World", NULL, NULL);
+  glfwSetWindowPos(window, 600, 100);
+  if (!window)
+  {
+    cout << "GLFW couldn't create a window." << endl;
+    glfwTerminate();
+    system("pause");
+    exit(EXIT_FAILURE);
+  }
+  glfwSetFramebufferSizeCallback(window, resizeCallback);
+  InputManager::getInstance().init(window);
+  glfwMakeContextCurrent(window);
+  glfwSwapInterval(0);
+
+  // Initialize GLEW.
+  glewExperimental = GL_TRUE;
+  if (glewInit() != GLEW_OK)
+  {
+    cout << "GLEW initialization failed." << endl;
+    glfwTerminate();
+    system("pause");
+    exit(EXIT_FAILURE);
+  }
+
+  // Initialize my stuff.
+  if (initGL(g_width, g_height) == false)
+  {
+    std::cout << "My initialization failed." << std::endl;
+    glfwTerminate();
+    system("pause");
+    exit(EXIT_FAILURE);
+  }
+
+
+  double const fixedDeltaTime = 1.0 / 60.0;
+  while (!glfwWindowShouldClose(window))
+  {
+    // Poll for and process events
+    glfwPollEvents();
+
+    // update
+    update(fixedDeltaTime);
+    update(fixedDeltaTime);
+    update(fixedDeltaTime);
+    update(fixedDeltaTime);
+    update(fixedDeltaTime);
+    update(fixedDeltaTime);
+    update(fixedDeltaTime);
+    update(fixedDeltaTime);
+
+    // render
+    render(g_width, g_height);
+    CHECKGLERROR();
+
+    // Swap front and back buffers
+    glfwSwapBuffers(window);
+
+    // Reset inputs
+    InputManager::getInstance().resetFrame();
+
+
+
+  }
+
+  glfwTerminate();
+}
+
+void runNormalMode() {
   GLFWwindow * window = nullptr;
   glfwSetErrorCallback(errorCallback);
 
@@ -510,6 +598,11 @@ int main()
 
   glfwTerminate();
   exit(EXIT_SUCCESS);
+}
 
-  return 0;
+int main()
+{
+  runFastMode();
+
+  exit(EXIT_SUCCESS);
 }
