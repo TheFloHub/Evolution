@@ -24,8 +24,8 @@ uint32_t const g_startPopulation = 20;
 double const g_personMaxEnergy = 200.0;
 
 // apples
-uint32_t const g_numNewApples = 60;
-double const g_newAppleTime = 5.0;
+uint32_t const g_numNewApples = 20;
+double const g_newAppleTime = 1.0;
 double const g_appleLifeTime = 5.0;
 double const g_appleEnergy = 25;
 
@@ -50,14 +50,14 @@ struct Person
 
   double m_maxEnergy{g_personMaxEnergy};
   double m_energy{m_maxEnergy};
-  double m_energyFixedLossPerSec{0.0};
+  double m_energyFixedLossPerSec{5.0};
   double m_engergySpeedLossFactor{1.0};
 
   // double m_vitality{200.0};
   // double m_vitalityDecreasePerSec{10};
 
-  double m_reproductionProbability{1.0};
-  double m_reproductionTime{10.0};
+  double m_reproductionProbability{0.1};
+  double m_reproductionTime{1.0};
   double m_reproductionPassedTime{0.0};
 };
 
@@ -371,8 +371,8 @@ void render(int width, int height)
   glBegin(GL_POINTS);
   for (auto const & p : g_persons)
   {
-    double const c = p.m_energy / p.m_maxEnergy;
-    //double const c = p.m_speed / 100.0;
+    //double const c = p.m_energy / p.m_maxEnergy;
+    double const c = p.m_speed / 60.0;
     glColor3d(1.0, c, c);
     glVertex3d(p.m_position.x(), p.m_position.y(), 0.0);
   }
