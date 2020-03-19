@@ -4,7 +4,7 @@
 namespace evo
 {
 double const g_appleLifeTime = 5.0;
-double const g_appleEnergy = 25;
+double const g_appleEnergy = 50;
 struct Apple
 {
   // TODO: energy = lifetime?

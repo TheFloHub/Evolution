@@ -5,7 +5,7 @@
 namespace evo
 {
 
-double const g_personMaxEnergy = 200.0;
+double const g_personMaxEnergy = 500.0;
 
 struct Person
 {
@@ -30,13 +30,13 @@ struct Person
 
   double m_maxEnergy{g_personMaxEnergy};
   double m_energy{m_maxEnergy};
-  double m_energyFixedLossPerSec{10.0}; // 18 was stable
+  double m_energyFixedLossPerSec{50.0}; // 18 was stable
   double m_engergySpeedLossFactor{1.0};
 
   // double m_vitality{200.0};
   // double m_vitalityDecreasePerSec{10};
 
-  double m_reproductionProbability{0.05};
+  double m_reproductionProbability{0.1};
   double m_reproductionTime{1.0};
   double m_reproductionPassedTime{0.0};
 
