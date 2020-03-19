@@ -119,9 +119,9 @@ void update(double deltaTime)
         newP.m_movementTrait->setDefault();
         newP.m_energy = g_personMaxEnergy;
         newP.m_reproductionPassedTime = 0.0;
-         //std::uniform_real_distribution<double> speedMutationDis(
-         //   0.7 * p.m_speed, 1.3 * p.m_speed);
-         //newP.m_speed = speedMutationDis(g_rng);
+         std::uniform_real_distribution<double> speedMutationDis(
+            0.9 * p.m_speed, 1.1 * p.m_speed);
+         newP.m_speed = speedMutationDis(evoSim.m_rng);
         born.emplace_back(newP);
       }
     }
@@ -198,8 +198,8 @@ void render(int width, int height)
   glBegin(GL_POINTS);
   for (auto const & p : evoSim.m_persons)
   {
-    double const c = p.m_energy / p.m_maxEnergy;
-    //double const c = p.m_speed / 60.0;
+    //double const c = p.m_energy / p.m_maxEnergy;
+    double const c = p.m_speed / 40.0;
     glColor3d(1.0, c, c);
     glVertex3d(p.m_position.x(), p.m_position.y(), 0.0);
   }
