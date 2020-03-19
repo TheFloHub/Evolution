@@ -26,7 +26,7 @@ EvoSim & evoSim = EvoSim::get();
 uint32_t const g_startPopulation = 20;
 
 // apples
-uint32_t const g_numNewApples = 20;
+uint32_t const g_numNewApples = 50;
 double const g_newAppleTime = 1.0;
 
 
@@ -299,13 +299,13 @@ void runFastMode() {
 
     // update
     update(fixedDeltaTime);
-    //update(fixedDeltaTime);
-    //update(fixedDeltaTime);
-    //update(fixedDeltaTime);
-    //update(fixedDeltaTime);
-    //update(fixedDeltaTime);
-    //update(fixedDeltaTime);
-    //update(fixedDeltaTime);
+    update(fixedDeltaTime);
+    update(fixedDeltaTime);
+    update(fixedDeltaTime);
+    update(fixedDeltaTime);
+    update(fixedDeltaTime);
+    update(fixedDeltaTime);
+    update(fixedDeltaTime);
 
     // render
     render(evoSim.m_width, evoSim.m_height);
