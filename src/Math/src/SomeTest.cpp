@@ -1,6 +1,6 @@
 #pragma warning(disable : 4996)
 #include "Math/SomeTest.h"
-namespace math
+namespace evo::math
 {
 Vector3f someTestFunction(Matrix3f const & matrix)
 {

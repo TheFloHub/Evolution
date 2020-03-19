@@ -6,7 +6,17 @@ find_package(glfw3 REQUIRED)
 add_executable(${PROJECT_NAME} 
 	main.cpp
 	Individual.h
-	Individual.cpp)
+	Individual.cpp
+	Person.h
+	Person.cpp
+	Apple.h
+	Apple.cpp
+	Movement.h
+	Movement.cpp
+	EvoSim.h
+	EvoSim.cpp
+	PopulationCounter.h
+	PopulationCounter.cpp)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw GLEW::GLEW Math Graphics3d)
 

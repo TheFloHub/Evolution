@@ -2,7 +2,7 @@
 #include <Eigen/Geometry>
 #include <cstdint>
 
-namespace math
+namespace evo::math
 {
 
 // fix vectors
@@ -110,4 +110,4 @@ using Projective3f =
 using Projective3d =
     Eigen::Transform<double, 3, Eigen::Projective, Eigen::DontAlign>;
 
-} // namespace math
+} // namespace evo::math

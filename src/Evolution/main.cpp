@@ -3,7 +3,11 @@
 #include "Graphics3d/GlInfo.h"
 #include "Graphics3d/Input/InputManager.h"
 #include <GLFW/glfw3.h>
-#include <Math/MathTypes.h>
+
+#include "EvoSim.h"
+#include "PopulationCounter.h"
+
+
 #include <iostream>
 #include <random>
 #include <string>
@@ -12,185 +16,26 @@
 
 using namespace std;
 using namespace g3d;
-using namespace math;
+using namespace evo;
 
-// gui
-int const g_width = 600;
-int const g_height = 700;
-int const g_yStart = 100;
+
+// evo
+EvoSim & evoSim = EvoSim::get();
 
 // people population
 uint32_t const g_startPopulation = 20;
-double const g_personMaxEnergy = 200.0;
 
 // apples
 uint32_t const g_numNewApples = 20;
 double const g_newAppleTime = 1.0;
-double const g_appleLifeTime = 5.0;
-double const g_appleEnergy = 25;
 
 
-struct Person
-{
-  bool isHungry() { return m_energy < m_maxEnergy / 2.0; }
-
-  Vector2d m_position{0.0, 0.0};
-
-  // TODO: person might eat other person and get some of their energy (factor /
-  // digestion efficiency)
-
-  // TODO: speed should be quadratic for energy loss
-  double m_speed{20.0};
-  double m_sensingRange{60.0};
-  double m_interactionRange{20.0};
-  // double m_size{1.0};
-  // size will increase the m_energyFixedLossPerSec and
-  // m_engergySpeedLossFactor, maybe another members though
-  double m_dirAngle{0.0};
-
-  double m_maxEnergy{g_personMaxEnergy};
-  double m_energy{m_maxEnergy};
-  double m_energyFixedLossPerSec{5.0};
-  double m_engergySpeedLossFactor{1.0};
-
-  // double m_vitality{200.0};
-  // double m_vitalityDecreasePerSec{10};
-
-  double m_reproductionProbability{0.1};
-  double m_reproductionTime{1.0};
-  double m_reproductionPassedTime{0.0};
-};
-
-struct Apple
-{
-  // TODO: energy = lifetime?
-  // energy decreases, giving also less energy when eaten
-  Vector2d m_position{0.0, 0.0};
-  double m_lifeTime{g_appleLifeTime};
-  double m_passedTime{0.0};
-  double m_energy{g_appleEnergy};
-};
-
-std::vector<Person> g_persons;
-std::vector<Apple> g_apples;
+// global distributions
+std::uniform_real_distribution<double> g_reproDis(0.0, 1.0f);
 
 // population chart
-struct PopulationCounter
-{
-  PopulationCounter(double const timeDiscretization, size_t const bufferSize)
-      : m_timeDiscretization(timeDiscretization), m_chart(bufferSize, 0)
-  {
-  }
+PopulationCounter g_populationPersons(1.0, evoSim.m_width);
 
-  // TODO: actually scale count with time and add parts to the next count
-  // this one assumes that framerate stays constant and ignores time overflow
-  void add(double deltaTime, size_t count)
-  {
-    m_passedTime += deltaTime;
-    m_totalCount += count;
-    ++m_numCounts;
-    if (m_passedTime >= m_timeDiscretization)
-    {
-      m_chart[m_index] = static_cast<uint32_t>(m_totalCount / m_numCounts);
-      ++m_index;
-      m_passedTime = 0.0;
-      m_totalCount = 0;
-      m_numCounts = 0;
-      cout << m_chart[m_index - 1] << endl;
-      if (m_index >= m_chart.size())
-      {
-        cout << "Population buffer overflow!" << endl;
-        m_index = 0;
-        m_filled = true;
-      }
-    }
-  }
-
-  void render(int const startY, int const width, int const height)
-  {
-    if (m_index == 0 && !m_filled)
-    {
-      return;
-    }
-
-    uint32_t const maxCount =
-        *std::max_element(std::begin(m_chart), std::end(m_chart));
-    if (maxCount == 0)
-    {
-      return;
-    }
-    double const yScale =
-        static_cast<double>(height) / static_cast<double>(maxCount);
-
-    if (m_index == 0)
-    {
-      // TODO:
-      return;
-    }
-    double const xScale =
-        static_cast<double>(width) / static_cast<double>(m_index);
-
-    glBegin(GL_QUADS);
-    glColor3f(1.0f, 1.0f, 1.0f);
-    double lastX = 0.0;
-    for (int i = 0; i < m_index; ++i)
-    {
-      double const x = (i + 1) * xScale;
-      double const y = startY + yScale * static_cast<double>(m_chart[i]);
-      glVertex3d(lastX, startY, 0.0);
-      glVertex3d(x, startY, 0.0);
-      glVertex3d(x, y, 0.0);
-      glVertex3d(lastX, y, 0.0);
-      lastX = x;
-    }
-    glEnd();
-  }
-
-  double const m_timeDiscretization;
-  double m_passedTime{0.0};
-  size_t m_totalCount{0};
-  size_t m_numCounts{0};
-  std::vector<uint32_t> m_chart;
-  size_t m_index{0};
-  bool m_filled{false};
-};
-
-PopulationCounter g_populationPersons(1.0, g_width);
-
-// random
-std::random_device g_rd;
-std::mt19937 g_rng(g_rd());
-std::uniform_real_distribution<float> g_xdis(0.0f, static_cast<float>(g_width));
-std::uniform_real_distribution<float> g_ydis(static_cast<float>(g_yStart),
-                                             static_cast<float>(g_height));
-
-// TODO: add a tracker instead of a function
-// void plotAttribute(std::vector<Person> const & population,
-//                   std::function<double(Person const&)> const & getter,
-//                   int const startX,
-//                   int conststartY, int const width, int const height,
-//    double const minValue, double const maxValue)
-//{
-//  double minV = std::numeric_limits<double>::max();
-//  double maxV = std::numeric_limits<double>::lowest();
-//  for (auto const& person : population)
-//  {
-//    double const v = getter(person);
-//    if (v > maxV)
-//    {
-//      maxV = v;
-//    }
-//    if (v < minV)
-//    {
-//      minV = v;
-//    }
-//  }
-//
-//
-//
-//
-//
-//}
 
 bool initGL(int width, int height)
 {
@@ -200,9 +45,9 @@ bool initGL(int width, int height)
   for (uint32_t i = 0; i < g_startPopulation; ++i)
   {
     Person p;
-    p.m_position.x() = g_xdis(g_rng);
-    p.m_position.y() = g_ydis(g_rng);
-    g_persons.emplace_back(p);
+    p.m_position.x() = evoSim.m_xdis(evoSim.m_rng);
+    p.m_position.y() = evoSim.m_ydis(evoSim.m_rng);
+    evoSim.m_persons.emplace_back(p);
   }
 
   // apples
@@ -211,9 +56,9 @@ bool initGL(int width, int height)
   for (uint32_t i = 0; i < numApplesStart; ++i)
   {
     Apple a;
-    a.m_position.x() = g_xdis(g_rng);
-    a.m_position.y() = g_ydis(g_rng);
-    g_apples.emplace_back(a);
+    a.m_position.x() = evoSim.m_xdis(evoSim.m_rng);
+    a.m_position.y() = evoSim.m_ydis(evoSim.m_rng);
+    evoSim.m_apples.emplace_back(a);
   }
 
   return true;
@@ -222,27 +67,29 @@ bool initGL(int width, int height)
 void update(double deltaTime)
 {
   static double passedAppleTime = 0.0;
-  static std::uniform_real_distribution<float> angleDis(-0.3f, 0.3f);
-  static std::uniform_real_distribution<double> reproDis(0.0, 1.0f);
+
 
   // population counters
-  g_populationPersons.add(deltaTime, g_persons.size());
+  g_populationPersons.add(deltaTime, evoSim.m_persons.size());
 
   // TODO: think about order, deltaTime is from last frame
   // people
   std::vector<size_t> died;
   std::vector<Person> born;
-  for (size_t pi = 0; pi < g_persons.size(); ++pi)
+  for (size_t pi = 0; pi < evoSim.m_persons.size(); ++pi)
   {
-    auto & p = g_persons[pi];
+    auto & p = evoSim.m_persons[pi];
+
+    // movement
+    p.m_movementTrait->move(p, deltaTime);
 
     // find closest apple
     double closestAppleDistance = std::numeric_limits<double>::max();
-    size_t closestAppleIndex = g_apples.size();
-    for (size_t ai = 0; ai < g_apples.size(); ++ai)
+    size_t closestAppleIndex = evoSim.m_apples.size();
+    for (size_t ai = 0; ai < evoSim.m_apples.size(); ++ai)
     {
       double const distSq =
-          (p.m_position - g_apples[ai].m_position).squaredNorm();
+          (p.m_position - evoSim.m_apples[ai].m_position).squaredNorm();
       if (distSq < closestAppleDistance)
       {
         closestAppleDistance = distSq;
@@ -250,35 +97,15 @@ void update(double deltaTime)
       }
     }
 
-    // movement
-    p.m_dirAngle += angleDis(g_rng);
-    double mdx = std::cos(p.m_dirAngle);
-    double mdy = std::sin(p.m_dirAngle);
-    double const srsq = p.m_sensingRange * p.m_sensingRange;
-    if (p.isHungry() && closestAppleDistance < srsq)
-    {
-      auto const apple = std::begin(g_apples) + closestAppleIndex;
-      Vector2d const dxy = (apple->m_position - p.m_position).normalized();
-      mdx = dxy.x();
-      mdy = dxy.y();
-    }
-    p.m_position.x() += deltaTime * p.m_speed * mdx;
-    p.m_position.y() += deltaTime * p.m_speed * mdy;
-    p.m_position.x() =
-        std::clamp(p.m_position.x(), 0.0, static_cast<double>(g_width));
-    p.m_position.y() =
-        std::clamp(p.m_position.y(), static_cast<double>(g_yStart),
-                   static_cast<double>(g_height));
-
     // eat apple
     double const irsq = p.m_interactionRange * p.m_interactionRange;
-    if (p.isHungry() && closestAppleIndex < g_apples.size() &&
+    if (p.isHungry() && closestAppleIndex < evoSim.m_apples.size() &&
         closestAppleDistance < irsq)
     {
-      auto const apple = std::begin(g_apples) + closestAppleIndex;
+      auto const apple = std::begin(evoSim.m_apples) + closestAppleIndex;
       p.m_energy += apple->m_energy;
       p.m_energy = std::min(p.m_maxEnergy, p.m_energy);
-      g_apples.erase(apple);
+      evoSim.m_apples.erase(apple);
     }
 
     // reproduction
@@ -286,10 +113,10 @@ void update(double deltaTime)
     if (p.m_reproductionPassedTime >= p.m_reproductionTime)
     {
       p.m_reproductionPassedTime -= p.m_reproductionTime;
-      if (reproDis(g_rng) <= p.m_reproductionProbability)
+      if (g_reproDis(evoSim.m_rng) <= p.m_reproductionProbability)
       {
         Person newP = p;
-        newP.m_dirAngle = 0.0;
+        newP.m_movementTrait->setDefault();
         newP.m_energy = g_personMaxEnergy;
         newP.m_reproductionPassedTime = 0.0;
          //std::uniform_real_distribution<double> speedMutationDis(
@@ -313,23 +140,23 @@ void update(double deltaTime)
 
   for (auto riter = std::rbegin(died); riter != std::rend(died); ++riter)
   {
-    g_persons.erase(std::begin(g_persons) + (*riter));
+    evoSim.m_persons.erase(std::begin(evoSim.m_persons) + (*riter));
   }
   for (auto & b : born)
   {
-    g_persons.emplace_back(b);
+    evoSim.m_persons.emplace_back(b);
   }
 
   // end people
 
   // apple decay
-  auto appleIter = std::begin(g_apples);
-  while (appleIter != std::end(g_apples))
+  auto appleIter = std::begin(evoSim.m_apples);
+  while (appleIter != std::end(evoSim.m_apples))
   {
     appleIter->m_passedTime += deltaTime;
     if (appleIter->m_passedTime >= appleIter->m_lifeTime)
     {
-      appleIter = g_apples.erase(appleIter);
+      appleIter = evoSim.m_apples.erase(appleIter);
     }
     else
     {
@@ -345,9 +172,9 @@ void update(double deltaTime)
     for (uint32_t i = 0; i < g_numNewApples; ++i)
     {
       Apple a;
-      a.m_position.x() = g_xdis(g_rng);
-      a.m_position.y() = g_ydis(g_rng);
-      g_apples.emplace_back(a);
+      a.m_position.x() = evoSim.m_xdis(evoSim.m_rng);
+      a.m_position.y() = evoSim.m_ydis(evoSim.m_rng);
+      evoSim.m_apples.emplace_back(a);
     }
   }
 }
@@ -369,10 +196,10 @@ void render(int width, int height)
   // persons
   glPointSize(14.0f);
   glBegin(GL_POINTS);
-  for (auto const & p : g_persons)
+  for (auto const & p : evoSim.m_persons)
   {
-    //double const c = p.m_energy / p.m_maxEnergy;
-    double const c = p.m_speed / 60.0;
+    double const c = p.m_energy / p.m_maxEnergy;
+    //double const c = p.m_speed / 60.0;
     glColor3d(1.0, c, c);
     glVertex3d(p.m_position.x(), p.m_position.y(), 0.0);
   }
@@ -382,20 +209,20 @@ void render(int width, int height)
   glPointSize(7.0f);
   glBegin(GL_POINTS);
   glColor3f(0.2f, 0.75f, 0.1f);
-  for (auto const & a : g_apples)
+  for (auto const & a : evoSim.m_apples)
   {
     glVertex3d(a.m_position.x(), a.m_position.y(), 0.0);
   }
   glEnd();
 
   // charts
-  g_populationPersons.render(0, g_width, g_yStart);
+  g_populationPersons.render(0, evoSim.m_width, evoSim.m_yStart);
 
   // chart separation
   glBegin(GL_LINES);
   glColor3f(1.0f, 0.0f, 1.0f);
-  glVertex3i(0, g_yStart, 0);
-  glVertex3i(g_width, g_yStart, 0);
+  glVertex3i(0, evoSim.m_yStart, 0);
+  glVertex3i(evoSim.m_width, evoSim.m_yStart, 0);
   glEnd();
 }
 
@@ -429,7 +256,8 @@ void runFastMode() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-  window = glfwCreateWindow(g_width, g_height, "Hello World", NULL, NULL);
+  window = glfwCreateWindow(evoSim.m_width, evoSim.m_height, "Hello World",
+                            NULL, NULL);
   glfwSetWindowPos(window, 600, 100);
   if (!window)
   {
@@ -454,7 +282,7 @@ void runFastMode() {
   }
 
   // Initialize my stuff.
-  if (initGL(g_width, g_height) == false)
+  if (initGL(evoSim.m_width, evoSim.m_height) == false)
   {
     std::cout << "My initialization failed." << std::endl;
     glfwTerminate();
@@ -471,16 +299,16 @@ void runFastMode() {
 
     // update
     update(fixedDeltaTime);
-    update(fixedDeltaTime);
-    update(fixedDeltaTime);
-    update(fixedDeltaTime);
-    update(fixedDeltaTime);
-    update(fixedDeltaTime);
-    update(fixedDeltaTime);
-    update(fixedDeltaTime);
+    //update(fixedDeltaTime);
+    //update(fixedDeltaTime);
+    //update(fixedDeltaTime);
+    //update(fixedDeltaTime);
+    //update(fixedDeltaTime);
+    //update(fixedDeltaTime);
+    //update(fixedDeltaTime);
 
     // render
-    render(g_width, g_height);
+    render(evoSim.m_width, evoSim.m_height);
     CHECKGLERROR();
 
     // Swap front and back buffers
@@ -513,7 +341,8 @@ void runNormalMode() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-  window = glfwCreateWindow(g_width, g_height, "Hello World", NULL, NULL);
+  window = glfwCreateWindow(evoSim.m_width, evoSim.m_height, "Hello World",
+                            NULL, NULL);
   glfwSetWindowPos(window, 600, 100);
   if (!window)
   {
@@ -538,7 +367,7 @@ void runNormalMode() {
   }
 
   // Initialize my stuff.
-  if (initGL(g_width, g_height) == false)
+  if (initGL(evoSim.m_width, evoSim.m_height) == false)
   {
     std::cout << "My initialization failed." << std::endl;
     glfwTerminate();
@@ -564,7 +393,7 @@ void runNormalMode() {
     update(deltaTime);
 
     // render
-    render(g_width, g_height);
+    render(evoSim.m_width, evoSim.m_height);
     CHECKGLERROR();
 
     // Swap front and back buffers
