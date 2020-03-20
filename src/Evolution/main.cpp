@@ -22,6 +22,9 @@ using namespace evo;
 // evo
 EvoSim & evoSim = EvoSim::get();
 
+// apple
+uint32_t g_numNewApples = 50;
+
 
 // global distributions
 std::uniform_real_distribution<double> g_reproDis(0.0, 1.0f);
@@ -61,6 +64,11 @@ void update(double deltaTime)
 {
   static double passedAppleTime = 0.0;
 
+  if (InputManager::getInstance().getKeyDown(KEY_DOWN))
+  {
+    --g_numNewApples;
+    cout << g_numNewApples << endl;
+  }
 
   // population counters
   g_populationPersons.add(deltaTime, evoSim.m_persons.size());
@@ -301,6 +309,8 @@ void runFastMode() {
 
     // update
     update(fixedDeltaTime);
+    // Reset inputs
+    InputManager::getInstance().resetFrame();
     update(fixedDeltaTime);
     update(fixedDeltaTime);
     update(fixedDeltaTime);
@@ -315,11 +325,6 @@ void runFastMode() {
 
     // Swap front and back buffers
     glfwSwapBuffers(window);
-
-    // Reset inputs
-    InputManager::getInstance().resetFrame();
-
-
 
   }
 

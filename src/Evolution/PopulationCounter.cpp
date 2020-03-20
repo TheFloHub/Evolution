@@ -18,7 +18,7 @@ void PopulationCounter::add(double deltaTime, size_t count)
     m_passedTime = 0.0;
     m_totalCount = 0;
     m_numCounts = 0;
-    cout << m_chart[m_index - 1] << endl;
+    //cout << m_chart[m_index - 1] << endl;
     if (m_index >= m_chart.size())
     {
       cout << "Population buffer overflow!" << endl;

@@ -30,7 +30,7 @@ struct Person
 
   double m_maxEnergy{600.0};
   double m_energy{m_maxEnergy};
-  double m_energyFixedLossPerSec{50.0}; // 18 was stable
+  double m_energyFixedLossPerSec{50.0}; 
   //double m_engergySpeedLossFactor{1.0};
 
   // double m_vitality{200.0};

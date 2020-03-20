@@ -4,8 +4,8 @@
 namespace evo
 {
 double const g_appleLifeTime = 5.0;
-uint32_t const g_numNewApples = 50;
 double const g_newAppleTime = 1.0;
+
 struct Apple
 {
   // TODO: energy = lifetime?
