@@ -1,7 +1,7 @@
 #pragma warning(disable : 4201)
 #include <gl/glew.h>
-#include "Graphics3d/GlInfo.h"
-#include "Graphics3d/Input/InputManager.h"
+#include "Graphics/GlInfo.h"
+#include "Input/InputManager.h"
 #include <GLFW/glfw3.h>
 
 #include "EvoSim.h"
@@ -15,7 +15,6 @@
 #include <vector>
 
 using namespace std;
-using namespace g3d;
 using namespace evo;
 
 
