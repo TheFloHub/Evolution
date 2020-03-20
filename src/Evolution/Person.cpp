@@ -14,7 +14,7 @@ Person & Person::operator=(const Person & other)
   m_energy = other.m_energy;
   m_energyFixedLossPerSec = other.m_energyFixedLossPerSec;
 
-  m_engergySpeedLossFactor = other.m_engergySpeedLossFactor;
+  //m_engergySpeedLossFactor = other.m_engergySpeedLossFactor;
   m_reproductionProbability = other.m_reproductionProbability;
   m_reproductionTime = other.m_reproductionTime;
   m_reproductionPassedTime = other.m_reproductionPassedTime;

@@ -22,13 +22,6 @@ using namespace evo;
 // evo
 EvoSim & evoSim = EvoSim::get();
 
-// people population
-uint32_t const g_startPopulation = 20;
-
-// apples
-uint32_t const g_numNewApples = 50;
-double const g_newAppleTime = 1.0;
-
 
 // global distributions
 std::uniform_real_distribution<double> g_reproDis(0.0, 1.0f);
@@ -117,18 +110,26 @@ void update(double deltaTime)
       {
         Person newP = p;
         newP.m_movementTrait->setDefault();
-        newP.m_energy = g_personMaxEnergy;
+        newP.m_energy = newP.m_maxEnergy;
         newP.m_reproductionPassedTime = 0.0;
-         std::uniform_real_distribution<double> speedMutationDis(
-            0.9 * p.m_speed, 1.1 * p.m_speed);
-         newP.m_speed = speedMutationDis(evoSim.m_rng);
+
+        // speed mutation
+         //std::uniform_real_distribution<double> speedMutationDis(
+         //   0.9 * p.m_speed, 1.1 * p.m_speed);
+         //newP.m_speed = speedMutationDis(evoSim.m_rng);
+
+        // sensing range mutation
+         std::uniform_real_distribution<double> sensingMutationDis(
+            0.9 * p.m_sensingRange, 1.1 * p.m_sensingRange);
+        newP.m_sensingRange = sensingMutationDis(evoSim.m_rng);
+
         born.emplace_back(newP);
       }
     }
 
     // energy
-    p.m_energy -=
-        (p.m_speed * p.m_engergySpeedLossFactor + p.m_energyFixedLossPerSec) *
+    p.m_energy -= (p.m_speed /** p.m_engergySpeedLossFactor*/ +
+                   p.m_energyFixedLossPerSec + p.m_sensingRange) *
         deltaTime;
 
     // death
@@ -199,7 +200,8 @@ void render(int width, int height)
   for (auto const & p : evoSim.m_persons)
   {
     //double const c = p.m_energy / p.m_maxEnergy;
-    double const c = p.m_speed / 40.0;
+    //double const c = p.m_speed / 40.0;
+    double const c = p.m_sensingRange / 120.0;
     glColor3d(1.0, c, c);
     glVertex3d(p.m_position.x(), p.m_position.y(), 0.0);
   }
