@@ -122,9 +122,9 @@ void update(double deltaTime)
         newP.m_reproductionPassedTime = 0.0;
 
         // speed mutation
-         //std::uniform_real_distribution<double> speedMutationDis(
-         //   0.9 * p.m_speed, 1.1 * p.m_speed);
-         //newP.m_speed = speedMutationDis(evoSim.m_rng);
+         std::uniform_real_distribution<double> speedMutationDis(
+            0.9 * p.m_speed, 1.1 * p.m_speed);
+         newP.m_speed = speedMutationDis(evoSim.m_rng);
 
         // sensing range mutation
          std::uniform_real_distribution<double> sensingMutationDis(
