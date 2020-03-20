@@ -20,6 +20,8 @@ add_executable(${PROJECT_NAME}
 	Terrain.h
 	Terrain.cpp
 	
+	Math/MathTypes.h
+
 	Input/InputManager.h
 	Input/InputManager.cpp
 	

@@ -15,7 +15,7 @@ struct Person
   bool isHungry() const;
 
 
-  math::Vector2d m_position{0.0, 0.0};
+  Vector3f m_position{0.0f, 0.0f, 0.0f};
 
   // TODO: person might eat other person and get some of their energy (factor /
   // digestion efficiency)

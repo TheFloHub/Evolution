@@ -79,7 +79,7 @@ void evo::InputManager::init(GLFWwindow * pWindow)
   glfwSetKeyCallback(pWindow, keyCallback);
   glfwSetMouseButtonCallback(pWindow, mouseButtonCallback);
   glfwSetCursorPosCallback(pWindow, cursorPositionCallback);
-  glfwSetInputMode(pWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  //glfwSetInputMode(pWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   glfwGetCursorPos(pWindow, &mLastX, &mLastY);
 }
 

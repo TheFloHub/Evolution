@@ -10,7 +10,7 @@ struct Apple
 {
   // TODO: energy = lifetime?
   // energy decreases, giving also less energy when eaten
-  math::Vector2d m_position{0.0, 0.0};
+  Vector3f m_position{0.0f, 0.0f, 0.0f};
   double m_lifeTime{g_appleLifeTime};
   double m_passedTime{0.0};
   double m_energy{150};
