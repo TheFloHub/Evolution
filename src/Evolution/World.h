@@ -6,6 +6,10 @@
 #include <random>
 #include <vector>
 
+// TODO: maybe there is a evosimulation class that contains the
+// world and camera any maybe even more things.
+// And world really keeps just terrain and flora und fauna.
+
 namespace evo
 {
 class World final
@@ -21,6 +25,7 @@ public:
   Vector3f const & getSize() const;
   void createTerrain(Vector3f const & size);
   Terrain const & getTerrain() const;
+  Camera & getCamera();
   Vector3f getRandomPosition() const;
 
   void addRandomPeople(uint32_t number);

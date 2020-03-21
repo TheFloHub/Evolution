@@ -1,4 +1,5 @@
 #pragma once
+#include "Math/MathTypes.h"
 #include <vector>
 
 struct GLFWwindow;
@@ -125,6 +126,8 @@ public:
   double getMouseDeltaX() const;
 
   double getMouseDeltaY() const;
+
+  Vector2d getMousePosition() const;
 
 private:
   InputManager();

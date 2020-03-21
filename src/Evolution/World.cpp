@@ -22,6 +22,7 @@ std::vector<Person> & World::getPersons() { return m_persons; }
 Vector3f const & World::getSize() const { return m_terrain.getSize(); }
 void World::createTerrain(Vector3f const & size) { m_terrain = Terrain(size); }
 Terrain const & World::getTerrain() const { return m_terrain; }
+Camera & World::getCamera() { return m_camera; }
 
 void World::update(double const deltaTime)
 {
@@ -140,6 +141,9 @@ void World::update(double const deltaTime)
     passedAppleTime -= g_newAppleTime;
     addRandomApples(g_numNewApples);
   }
+
+  // camera
+  m_camera.update(deltaTime);
 }
 
 void World::render() const
@@ -149,15 +153,16 @@ void World::render() const
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluPerspective(60, 1, 100, 1000);
+  m_camera.applyMatrix();
+  //glMatrixMode(GL_PROJECTION);
+  //glLoadIdentity();
+  //gluPerspective(60, 1, 100, 1000);
 
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  auto const & terrainSize = getSize();
-  gluLookAt(terrainSize.x() / 2, 800, terrainSize.z() / 2, terrainSize.x() / 2,
-            0, terrainSize.z() / 2, 0, 0, 1);
+  //glMatrixMode(GL_MODELVIEW);
+  //glLoadIdentity();
+  //auto const & terrainSize = getSize();
+  //gluLookAt(terrainSize.x() / 2, 800, terrainSize.z() / 2, terrainSize.x() / 2,
+  //          0, terrainSize.z() / 2, 0, 0, 1);
 
   m_terrain.render();
 

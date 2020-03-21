@@ -17,7 +17,12 @@ using namespace evo;
 
 bool initEvo(int width, int height, World & world)
 {
+  Vector3f const worldSize(800.0f, 100.0f, 800.0f);
   glViewport(0, 0, width, height);
+  world.createTerrain(worldSize);
+  world.getCamera().setWindowSize(width, height);
+  world.getCamera().setFocus({worldSize.x() / 2, 0.0f, worldSize.z() / 2});
+  world.getCamera().setDistance((worldSize.x() + worldSize.z()) / 2);
   world.addRandomPeople(g_startPopulation);
   uint32_t const numApplesStart = static_cast<uint32_t>(
       static_cast<double>(g_numNewApples) * g_appleLifeTime / g_newAppleTime);
@@ -163,7 +168,7 @@ void runFastMode()
   }
 
   // Create a windowed mode window and its OpenGL context.
-  int const windowWidth = 800;
+  int const windowWidth = 1200;
   int const windowHeight = 800;
 
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -196,7 +201,6 @@ void runFastMode()
 
   // Initialize my stuff.
   World world;
-  world.createTerrain({800, 100, 800});
   if (initEvo(windowWidth, windowHeight, world) == false)
   {
     std::cout << "My initialization failed." << std::endl;
@@ -204,7 +208,6 @@ void runFastMode()
     system("pause");
     exit(EXIT_FAILURE);
   }
-
 
   double constexpr deltaTime = 1.0 / 60.0;
   while (!glfwWindowShouldClose(window))
@@ -236,8 +239,8 @@ void runFastMode()
 
 int main()
 {
-  // runNormalMode();
-  runFastMode();
+  runNormalMode();
+  // runFastMode();
 
   exit(EXIT_SUCCESS);
 }

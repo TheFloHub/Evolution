@@ -127,4 +127,8 @@ bool evo::InputManager::getMouseButtonUp(MouseInput name) const
 
 double evo::InputManager::getMouseDeltaX() const { return mDiffX; }
 
+evo::Vector2d evo::InputManager::getMousePosition() const
+{
+  return {mLastX, mLastY};
+}
 double evo::InputManager::getMouseDeltaY() const { return mDiffY; }
