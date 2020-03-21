@@ -3,8 +3,9 @@
 
 namespace evo
 {
-double const g_appleLifeTime = 5.0;
-double const g_newAppleTime = 1.0;
+double constexpr g_appleLifeTime = 5.0;
+double constexpr g_newAppleTime = 1.0;
+uint32_t constexpr g_numNewApples = 50;
 
 struct Apple
 {

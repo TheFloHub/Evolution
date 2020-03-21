@@ -2,9 +2,9 @@
 #include <gl/glew.h>
 #include "Graphics/GlInfo.h"
 #include "Input/InputManager.h"
-#include <GLFW/glfw3.h>
 #include "PopulationCounter.h"
 #include "World.h"
+#include <GLFW/glfw3.h>
 
 #include <iostream>
 #include <random>
@@ -15,31 +15,13 @@
 using namespace std;
 using namespace evo;
 
-
-bool initEvo(int width, int height, World & /*world*/)
+bool initEvo(int width, int height, World & world)
 {
   glViewport(0, 0, width, height);
-
-  //// people
-  //for (uint32_t i = 0; i < g_startPopulation; ++i)
-  //{
-  //  Person p;
-  //  p.m_position.x() = evoSim.m_xdis(evoSim.m_rng);
-  //  p.m_position.y() = evoSim.m_ydis(evoSim.m_rng);
-  //  evoSim.m_persons.emplace_back(p);
-  //}
-
-  //// apples
-  //uint32_t const numApplesStart = static_cast<uint32_t>(
-  //    static_cast<double>(g_numNewApples) * g_appleLifeTime / g_newAppleTime);
-  //for (uint32_t i = 0; i < numApplesStart; ++i)
-  //{
-  //  Apple a;
-  //  a.m_position.x() = evoSim.m_xdis(evoSim.m_rng);
-  //  a.m_position.y() = evoSim.m_ydis(evoSim.m_rng);
-  //  evoSim.m_apples.emplace_back(a);
-  //}
-
+  world.addRandomPeople(g_startPopulation);
+  uint32_t const numApplesStart = static_cast<uint32_t>(
+      static_cast<double>(g_numNewApples) * g_appleLifeTime / g_newAppleTime);
+  world.addRandomApples(numApplesStart);
   return true;
 }
 
@@ -58,7 +40,8 @@ void resizeCallback(GLFWwindow * window, int width, int height)
   }
 }
 
-void runNormalMode() {
+void runNormalMode()
+{
   GLFWwindow * window = nullptr;
   glfwSetErrorCallback(errorCallback);
 
@@ -78,8 +61,7 @@ void runNormalMode() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
   window =
-      glfwCreateWindow(windowWidth, windowHeight, "Hello World",
-                            NULL, NULL);
+      glfwCreateWindow(windowWidth, windowHeight, "Hello World", NULL, NULL);
   glfwSetWindowPos(window, 100, 50);
   if (!window)
   {
@@ -105,7 +87,7 @@ void runNormalMode() {
 
   // Initialize my stuff.
   World world;
-  world.createTerrain({100, 100, 100});
+  world.createTerrain({800, 100, 800});
   if (initEvo(windowWidth, windowHeight, world) == false)
   {
     std::cout << "My initialization failed." << std::endl;
@@ -167,9 +149,95 @@ void runNormalMode() {
   glfwTerminate();
 }
 
+void runFastMode()
+{
+  GLFWwindow * window = nullptr;
+  glfwSetErrorCallback(errorCallback);
+
+  // Initialize GLFW library.
+  if (glfwInit() == false)
+  {
+    cout << "GLFW initialization failed." << endl;
+    system("pause");
+    exit(EXIT_FAILURE);
+  }
+
+  // Create a windowed mode window and its OpenGL context.
+  int const windowWidth = 800;
+  int const windowHeight = 800;
+
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
+  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+  window =
+      glfwCreateWindow(windowWidth, windowHeight, "Hello World", NULL, NULL);
+  glfwSetWindowPos(window, 100, 50);
+  if (!window)
+  {
+    cout << "GLFW couldn't create a window." << endl;
+    glfwTerminate();
+    system("pause");
+    exit(EXIT_FAILURE);
+  }
+  glfwMakeContextCurrent(window);
+  InputManager::getInstance().init(window);
+  glfwSwapInterval(0);
+  glfwSetFramebufferSizeCallback(window, resizeCallback);
+
+  // Initialize GLEW.
+  glewExperimental = GL_TRUE;
+  if (glewInit() != GLEW_OK)
+  {
+    cout << "GLEW initialization failed." << endl;
+    glfwTerminate();
+    system("pause");
+    exit(EXIT_FAILURE);
+  }
+
+  // Initialize my stuff.
+  World world;
+  world.createTerrain({800, 100, 800});
+  if (initEvo(windowWidth, windowHeight, world) == false)
+  {
+    std::cout << "My initialization failed." << std::endl;
+    glfwTerminate();
+    system("pause");
+    exit(EXIT_FAILURE);
+  }
+
+
+  double constexpr deltaTime = 1.0 / 60.0;
+  while (!glfwWindowShouldClose(window))
+  {
+    // Poll for and process events
+    glfwPollEvents();
+
+    // update
+    world.update(deltaTime);
+    // Reset inputs
+    InputManager::getInstance().resetFrame();
+    world.update(deltaTime);
+    world.update(deltaTime);
+    world.update(deltaTime);
+    world.update(deltaTime);
+    world.update(deltaTime);
+    world.update(deltaTime);
+    world.update(deltaTime);
+
+    // render
+    world.render();
+    CHECKGLERROR();
+
+    // Swap front and back buffers
+    glfwSwapBuffers(window);
+  }
+  glfwTerminate();
+}
+
 int main()
 {
-  runNormalMode();
+  // runNormalMode();
+  runFastMode();
 
   exit(EXIT_SUCCESS);
 }

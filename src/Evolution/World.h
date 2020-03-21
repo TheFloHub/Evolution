@@ -16,10 +16,15 @@ public:
 
   std::vector<Apple> const & getApples() const;
   std::vector<Person> const & getPersons() const;
+  std::vector<Apple> & getApples();
+  std::vector<Person> & getPersons();
   Vector3f const & getSize() const;
   void createTerrain(Vector3f const & size);
   Terrain const & getTerrain() const;
   Vector3f getRandomPosition() const;
+
+  void addRandomPeople(uint32_t number);
+  void addRandomApples(uint32_t number);
 
 private:
   std::vector<Apple> m_apples{};

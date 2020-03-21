@@ -1,6 +1,6 @@
-#include "gl/glew.h"
 #include "World.h"
 #include "Input/InputManager.h"
+#include "gl/glew.h"
 #include <iostream>
 #include <random>
 
@@ -8,12 +8,7 @@ using namespace std;
 
 namespace
 {
-// apple
-uint32_t g_numNewApples = 50;
-
-// global distributions
 std::uniform_real_distribution<double> g_reproDis(0.0, 1.0f);
-
 std::random_device g_rd{};
 std::mt19937 g_rng{g_rd()};
 } // namespace
@@ -22,6 +17,8 @@ namespace evo
 {
 std::vector<Apple> const & World::getApples() const { return m_apples; }
 std::vector<Person> const & World::getPersons() const { return m_persons; }
+std::vector<Apple> & World::getApples() { return m_apples; }
+std::vector<Person> & World::getPersons() { return m_persons; }
 Vector3f const & World::getSize() const { return m_terrain.getSize(); }
 void World::createTerrain(Vector3f const & size) { m_terrain = Terrain(size); }
 Terrain const & World::getTerrain() const { return m_terrain; }
@@ -30,11 +27,11 @@ void World::update(double const deltaTime)
 {
   static double passedAppleTime = 0.0;
 
-  if (InputManager::getInstance().getKeyDown(KEY_DOWN))
-  {
-    --g_numNewApples;
-    cout << g_numNewApples << endl;
-  }
+  //if (InputManager::getInstance().getKeyDown(KEY_DOWN))
+  //{
+  //  --g_numNewApples;
+  //  cout << g_numNewApples << endl;
+  //}
 
   // TODO: think about order, deltaTime is from last frame
   // people
@@ -45,7 +42,7 @@ void World::update(double const deltaTime)
     auto & p = m_persons[pi];
 
     // movement
-    p.m_movementTrait->move(p, deltaTime);
+    p.m_movementTrait->move(p, *this, deltaTime);
 
     // find closest apple
     double closestAppleDistance = std::numeric_limits<double>::max();
@@ -141,15 +138,12 @@ void World::update(double const deltaTime)
   if (passedAppleTime >= g_newAppleTime)
   {
     passedAppleTime -= g_newAppleTime;
-    for (uint32_t i = 0; i < g_numNewApples; ++i)
-    {
-      Apple a;
-      a.m_position = getRandomPosition();
-      m_apples.emplace_back(a);
-    }
+    addRandomApples(g_numNewApples);
   }
 }
-void World::render() const {
+
+void World::render() const
+{
   glDisable(GL_CULL_FACE);
 
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -157,29 +151,28 @@ void World::render() const {
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(60, 1, 10, 500);
+  gluPerspective(60, 1, 100, 1000);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   auto const & terrainSize = getSize();
-  gluLookAt(terrainSize.x() / 2, 200, terrainSize.z() / 2, terrainSize.x() / 2,
+  gluLookAt(terrainSize.x() / 2, 800, terrainSize.z() / 2, terrainSize.x() / 2,
             0, terrainSize.z() / 2, 0, 0, 1);
 
   m_terrain.render();
 
-
-  //// persons
-  //glPointSize(14.0f);
-  //glBegin(GL_POINTS);
-  //for (auto const & p : evoSim.m_persons)
-  //{
-  //  // double const c = p.m_energy / p.m_maxEnergy;
-  //  // double const c = p.m_speed / 40.0;
-  //  double const c = p.m_sensingRange / 120.0;
-  //  glColor3d(1.0, c, c);
-  //  glVertex3d(p.m_position.x(), p.m_position.y(), 0.0);
-  //}
-  //glEnd();
+  // persons
+  glPointSize(14.0f);
+  glBegin(GL_POINTS);
+  for (auto const & p : m_persons)
+  {
+    // double const c = p.m_energy / p.m_maxEnergy;
+    // double const c = p.m_speed / 40.0;
+    double const c = p.m_sensingRange / 120.0;
+    glColor3d(1.0, c, c);
+    glVertex3f(p.m_position.x(), p.m_position.y(), p.m_position.z());
+  }
+  glEnd();
 
   // apples
   glPointSize(7.0f);
@@ -190,17 +183,6 @@ void World::render() const {
     glVertex3f(a.m_position.x(), a.m_position.y(), a.m_position.z());
   }
   glEnd();
-
-  //// charts
-  //g_populationPersons.render(0, evoSim.m_width, evoSim.m_yStart);
-
-  //// chart separation
-  //glBegin(GL_LINES);
-  //glColor3f(1.0f, 0.0f, 1.0f);
-  //glVertex3i(0, evoSim.m_yStart, 0);
-  //glVertex3i(evoSim.m_width, evoSim.m_yStart, 0);
-  //glEnd();
-
 }
 
 Vector3f World::getRandomPosition() const
@@ -208,5 +190,25 @@ Vector3f World::getRandomPosition() const
   std::uniform_real_distribution<float> xdis{0.0f, getSize().x()};
   std::uniform_real_distribution<float> zdis{0.0f, getSize().z()};
   return {xdis(g_rng), 0.0f, zdis(g_rng)};
+}
+
+void World::addRandomPeople(uint32_t number)
+{
+  for (uint32_t i = 0; i < number; ++i)
+  {
+    Person p;
+    p.m_position = getRandomPosition();
+    m_persons.emplace_back(p);
   }
+}
+
+void World::addRandomApples(uint32_t number)
+{
+  for (uint32_t i = 0; i < number; ++i)
+  {
+    Apple a;
+    a.m_position = getRandomPosition();
+    m_apples.emplace_back(a);
+  }
+}
 } // namespace evo

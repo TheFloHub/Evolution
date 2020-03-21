@@ -1,6 +1,5 @@
 #include "Input/InputManager.h"
 #include <GLFW/glfw3.h>
-
 #include <iostream>
 
 const size_t evo::InputManager::MAX_KEY_ID = 500;

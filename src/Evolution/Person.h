@@ -5,7 +5,7 @@
 namespace evo
 {
 
-uint32_t const g_startPopulation = 20;
+uint32_t constexpr g_startPopulation = 20;
 
 struct Person
 {

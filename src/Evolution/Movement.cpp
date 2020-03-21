@@ -1,26 +1,27 @@
 #include "Movement.h"
-#include "EvoSim.h"
+#include "World.h"
+#include <random>
 
 namespace
 {
+std::random_device g_rd{};
+std::mt19937 g_rng{g_rd()};
 std::uniform_real_distribution<double> g_angleDis(0, 6.2831853);
-}
+} // namespace
 
 namespace evo
 {
 std::unique_ptr<MovementTrait> NormalMovement::clone() const
 {
-  NormalMovement * mt = new NormalMovement;
-  *mt = *this;
-  return std::unique_ptr<MovementTrait>(mt);
+  return std::unique_ptr<MovementTrait>(new NormalMovement(*this));
 }
 
 void NormalMovement::setDefault() { *this = NormalMovement(); }
 
-void NormalMovement::move(Person & p, double const deltaTime)
+void NormalMovement::move(Person & p, World const & world,
+                          double const deltaTime)
 {
-  auto & evoSim = EvoSim::get();
-  auto const & apples = evoSim.m_apples;
+  auto const & apples = world.getApples();
 
   // find closest apple
   double closestAppleDistance = std::numeric_limits<double>::max();
@@ -52,7 +53,7 @@ void NormalMovement::move(Person & p, double const deltaTime)
     if (m_angleChangePassedTime >= m_angleChangeTime)
     {
       m_angleChangePassedTime -= m_angleChangeTime;
-      m_dirAngle = g_angleDis(evoSim.m_rng);
+      m_dirAngle = g_angleDis(g_rng);
     }
 
     mdx = std::cos(m_dirAngle);
@@ -61,11 +62,8 @@ void NormalMovement::move(Person & p, double const deltaTime)
 
   p.m_position.x() += static_cast<float>(deltaTime * p.m_speed * mdx);
   p.m_position.z() += static_cast<float>(deltaTime * p.m_speed * mdz);
-  // TODO:
-  //p.m_position.x() =
-  //    std::clamp(p.m_position.x(), 0.0, static_cast<double>(evoSim.m_width));
-  //p.m_position.z() =
-  //    std::clamp(p.m_position.y(), static_cast<double>(evoSim.m_yStart),
-  //               static_cast<double>(evoSim.m_height));
+  auto const & worldSize = world.getSize();
+  p.m_position.x() = std::clamp(p.m_position.x(), 0.0f, worldSize.x());
+  p.m_position.z() = std::clamp(p.m_position.z(), 0.0f, worldSize.z());
 }
 } // namespace evo
