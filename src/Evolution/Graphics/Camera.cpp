@@ -11,8 +11,11 @@ void Camera::setWindowSize(uint32_t width, uint32_t height)
 {
   m_windowHeight = height;
   m_windowWidth = width;
-  m_adjustWidth = 1.0f / ((width - 1.0f) * 0.5f);
-  m_adjustHeight = 1.0f / ((height - 1.0f) * 0.5f);
+  if (width > 0 && height > 0)
+  {
+    m_adjustWidth = 2.0f / width;
+    m_adjustHeight = 2.0f / height;
+  }
 }
 
 
@@ -39,53 +42,33 @@ void Camera::startDrag(Vector2f const & point)
 }
 void Camera::drag(Vector2f const & point)
 {
-  Transform3f thisQuat = Transform3f::Identity();
-  drag(point, thisQuat); // Update End Vector And Get Rotation As Quaternion
-  m_currentRotation = thisQuat;
-  m_currentRotation = m_currentRotation * m_lastRotation;
-}
-
-void Camera::drag(Vector2f const & point, Transform3f & newRot)
-{
   mapToSphere(point, m_endVector);
-    Vector3f const Perp = m_startVector.cross(m_endVector).normalized();
-  Eigen::AngleAxisf aa(std::acos(m_startVector.dot(m_endVector)), Perp);
-    newRot = aa.matrix();
+  Vector3f const axis = m_startVector.cross(m_endVector).normalized();
+  Eigen::AngleAxisf aa(std::acos(m_startVector.dot(m_endVector)), axis);
+  Transform3f newRotation = Transform3f::Identity();
+  newRotation.linear() = aa.toRotationMatrix();
+  m_currentRotation = newRotation * m_lastRotation;
 }
 
 void Camera::mapToSphere(Vector2f const & point, Vector3f & vector) {
-  // Copy paramter into temp point
-  Vector2f tempPoint = point;
-
-  // Adjust point coords and scale down to range of [-1 ... 1]
-  tempPoint.x() = (tempPoint.x() * m_adjustWidth) - 1.0f;
-  tempPoint.y() = 1.0f - (tempPoint.y() * m_adjustHeight);
-
-  // Compute the square of the length of the vector to the point from the center
-  float length =
-      (tempPoint.x() * tempPoint.x()) + (tempPoint.y() * tempPoint.y());
-
-  // If the point is mapped outside of the sphere... (length > radius squared)
-  if (length > 1.0f)
+  // adjust point coords and scale down to range of [-1 ... 1]
+  Vector2f const tempPoint((point.x() * m_adjustWidth) - 1.0f,
+                           1.0f - (point.y() * m_adjustHeight));
+  float const squaredNorm = tempPoint.squaredNorm();
+  if (squaredNorm > 1.0f)
   {
-    // Compute a normalizing factor (radius / sqrt(length))
-    float const norm = 1.0f / std::sqrt(length);
-
-    // Return the "normalized" vector, a point on the sphere
+    float const norm = 1.0f / std::sqrt(squaredNorm);
     vector.x() = tempPoint.x() * norm;
     vector.y() = tempPoint.y() * norm;
     vector.z() = 0.0f;
   }
-  else // Else it's on the inside
+  else 
   {
-    // Return a vector to a point mapped inside the sphere sqrt(radius squared -
-    // length)
     vector.x() = tempPoint.x();
     vector.y() = tempPoint.y();
-    vector.z() = std::sqrt(1.0f - length);
+    vector.z() = std::sqrt(1.0f - squaredNorm);
   }
 }
-
 
 void Camera::applyMatrix() const
 {
@@ -98,6 +81,7 @@ void Camera::applyMatrix() const
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
+  // TODO: rotate 180
   /*gluLookAt(800 / 2, 800, 800 / 2, 800 / 2, 0, 800 / 2, 0, 0, 1);*/
   // distance from camera to object
   glTranslatef(0, 0, -m_distance);

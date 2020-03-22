@@ -16,7 +16,6 @@ public:
 private:
   void startDrag(Vector2f const & point);
   void drag(Vector2f const & point);
-  void drag(Vector2f const & point, Transform3f & newRot);
   void mapToSphere(Vector2f const & point, Vector3f & vector);
 
   uint32_t m_windowWidth{100};
