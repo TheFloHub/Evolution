@@ -52,7 +52,7 @@ void Camera::drag(Vector2f const & point)
 
 void Camera::mapToSphere(Vector2f const & point, Vector3f & vector) {
   // adjust point coords and scale down to range of [-1 ... 1]
-  Vector2f const tempPoint((point.x() * m_adjustWidth) - 1.0f,
+  Vector2f const tempPoint(1.0f - (point.x() * m_adjustWidth),
                            1.0f - (point.y() * m_adjustHeight));
   float const squaredNorm = tempPoint.squaredNorm();
   if (squaredNorm > 1.0f)
@@ -66,7 +66,7 @@ void Camera::mapToSphere(Vector2f const & point, Vector3f & vector) {
   {
     vector.x() = tempPoint.x();
     vector.y() = tempPoint.y();
-    vector.z() = std::sqrt(1.0f - squaredNorm);
+    vector.z() = -std::sqrt(1.0f - squaredNorm);
   }
 }
 
@@ -81,10 +81,9 @@ void Camera::applyMatrix() const
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  // TODO: rotate 180
-  /*gluLookAt(800 / 2, 800, 800 / 2, 800 / 2, 0, 800 / 2, 0, 0, 1);*/
+  glRotatef(180, 0, 1, 0);
   // distance from camera to object
-  glTranslatef(0, 0, -m_distance);
+  glTranslatef(0, 0, m_distance);
   // arc ball rotation matrix
   glMultMatrixf(m_currentRotation.data());
   // move focus to zero point
