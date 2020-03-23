@@ -148,46 +148,40 @@ void World::update(double const deltaTime)
 
 void World::render() const
 {
-  glDisable(GL_CULL_FACE);
-
+  glEnable(GL_CULL_FACE);
+  glEnable(GL_DEPTH_TEST);
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
   m_camera.applyMatrix();
-  //glMatrixMode(GL_PROJECTION);
-  //glLoadIdentity();
-  //gluPerspective(60, 1, 100, 1000);
-
-  //glMatrixMode(GL_MODELVIEW);
-  //glLoadIdentity();
-  //auto const & terrainSize = getSize();
-  //gluLookAt(terrainSize.x() / 2, 800, terrainSize.z() / 2, terrainSize.x() / 2,
-  //          0, terrainSize.z() / 2, 0, 0, 1);
-
   m_terrain.render();
 
+  GLUquadricObj * quadric;
+  quadric = gluNewQuadric();
+  gluQuadricDrawStyle(quadric, GLU_FILL);
+
   // persons
-  glPointSize(14.0f);
-  glBegin(GL_POINTS);
   for (auto const & p : m_persons)
   {
+    glPushMatrix();
     // double const c = p.m_energy / p.m_maxEnergy;
     // double const c = p.m_speed / 40.0;
     double const c = p.m_sensingRange / 120.0;
     glColor3d(1.0, c, c);
-    glVertex3f(p.m_position.x(), p.m_position.y(), p.m_position.z());
+    glTranslatef(p.m_position.x(), p.m_position.y(), p.m_position.z());
+    gluSphere(quadric, 10, 18, 9);
+    glPopMatrix();
   }
-  glEnd();
 
   // apples
-  glPointSize(7.0f);
-  glBegin(GL_POINTS);
   glColor3f(0.2f, 0.75f, 0.1f);
   for (auto const & a : m_apples)
   {
-    glVertex3f(a.m_position.x(), a.m_position.y(), a.m_position.z());
+    glPushMatrix();
+    glTranslatef(a.m_position.x(), a.m_position.y(), a.m_position.z());
+    gluSphere(quadric, 6, 18, 9);
+    glPopMatrix();
   }
-  glEnd();
+  gluDeleteQuadric(quadric);
 }
 
 Vector3f World::getRandomPosition() const
