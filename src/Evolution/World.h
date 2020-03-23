@@ -23,8 +23,9 @@ public:
   std::vector<Apple> & getApples();
   std::vector<Person> & getPersons();
   Vector3f const & getSize() const;
-  void createTerrain(Vector3f const & size);
-  Terrain const & getTerrain() const;
+
+  Terrain & getTerrain();
+
   Camera & getCamera();
   Vector3f getRandomPosition() const;
 

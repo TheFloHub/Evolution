@@ -1,5 +1,6 @@
 #pragma once
 #include "Math/MathTypes.h"
+#include <string>
 
 namespace evo
 {
@@ -8,11 +9,10 @@ class Terrain final
 {
 public:
   Terrain();
-  Terrain(Terrain const & other);
-  explicit Terrain(Vector3f const & size);
+  Terrain(Terrain const & other) = delete;
+  Terrain& operator=(Terrain const & other) = delete;
 
-  Terrain& operator=(Terrain const & other);
-
+  void createFromImage(std::string const & imageFilePath, Vector3f const & size);
   Vector3f const & getSize() const;
 
   void render() const;

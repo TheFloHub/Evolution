@@ -1,6 +1,7 @@
 #include "World.h"
-#include "Input/InputManager.h"
 #include "GL/glew.h"
+#include "Input/InputManager.h"
+#include <array>
 #include <iostream>
 #include <random>
 
@@ -20,15 +21,14 @@ std::vector<Person> const & World::getPersons() const { return m_persons; }
 std::vector<Apple> & World::getApples() { return m_apples; }
 std::vector<Person> & World::getPersons() { return m_persons; }
 Vector3f const & World::getSize() const { return m_terrain.getSize(); }
-void World::createTerrain(Vector3f const & size) { m_terrain = Terrain(size); }
-Terrain const & World::getTerrain() const { return m_terrain; }
+Terrain & World::getTerrain() { return m_terrain; }
 Camera & World::getCamera() { return m_camera; }
 
 void World::update(double const deltaTime)
 {
   static double passedAppleTime = 0.0;
 
-  //if (InputManager::getInstance().getKeyDown(KEY_DOWN))
+  // if (InputManager::getInstance().getKeyDown(KEY_DOWN))
   //{
   //  --g_numNewApples;
   //  cout << g_numNewApples << endl;
@@ -148,7 +148,25 @@ void World::update(double const deltaTime)
 
 void World::render() const
 {
-  glEnable(GL_CULL_FACE);
+  // basic lighting
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  glEnable(GL_COLOR_MATERIAL);
+  glShadeModel(GL_SMOOTH);
+
+     GLfloat mat_specular[] = {1.0, 1.0, 1.0, 1.0};
+  GLfloat mat_shininess[] = {50.0};
+  GLfloat light_position[] = {1.0, 1.0, 1.0, 0.0};
+  glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+  glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+  glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+  glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+  glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+  std::array<float, 4> const lp = {1, 1, 1, 0};
+  glLightfv(GL_LIGHT0, GL_POSITION, lp.data());
+
+  glDisable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -1,4 +1,3 @@
-#pragma warning(disable : 4201)
 #include <gl/glew.h>
 #include "Graphics/GlInfo.h"
 #include "Input/InputManager.h"
@@ -19,7 +18,8 @@ bool initEvo(int width, int height, World & world)
 {
   Vector3f const worldSize(800.0f, 100.0f, 800.0f);
   glViewport(0, 0, width, height);
-  world.createTerrain(worldSize);
+  world.getTerrain().createFromImage(
+      "D:\\Eigene Daten\\Dokumente\\3D Modelle\\hm.png", worldSize);
   world.getCamera().setWindowSize(width, height);
   world.getCamera().setFocus({worldSize.x() / 2, 0.0f, worldSize.z() / 2});
   world.getCamera().setDistance((worldSize.x() + worldSize.z()) / 2);
@@ -92,7 +92,6 @@ void runNormalMode()
 
   // Initialize my stuff.
   World world;
-  world.createTerrain({800, 100, 800});
   if (initEvo(windowWidth, windowHeight, world) == false)
   {
     std::cout << "My initialization failed." << std::endl;
@@ -239,8 +238,8 @@ void runFastMode()
 
 int main()
 {
-  //runNormalMode();
-  runFastMode();
+  runNormalMode();
+  //runFastMode();
 
   exit(EXIT_SUCCESS);
 }

@@ -27,13 +27,17 @@ add_executable(${PROJECT_NAME}
 
 	Importer/stb_image.h
 	Importer/stb_image.cpp
+	Importer/ObjImporter.h
+	Importer/ObjImporter.cpp
 	
 	Graphics/GlInfo.h
 	Graphics/GlInfo.cpp
 	Graphics/Camera.h
 	Graphics/Camera.cpp
 	Graphics/Texture.h
-	Graphics/Texture.cpp)
+	Graphics/Texture.cpp
+	Graphics/Mesh.h
+	Graphics/Mesh.cpp)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw GLEW::GLEW)
 target_include_directories(${PROJECT_NAME} PRIVATE ./)
