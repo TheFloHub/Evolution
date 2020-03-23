@@ -16,13 +16,13 @@ using namespace evo;
 
 bool initEvo(int width, int height, World & world)
 {
-  Vector3f const worldSize(800.0f, 100.0f, 800.0f);
+  Vector3f const worldSize(800.0f, 800.0f, 100.0f);
   glViewport(0, 0, width, height);
   world.getTerrain().createFromImage(
-      "D:\\Eigene Daten\\Dokumente\\3D Modelle\\hm.png", worldSize);
+      "D:\\Eigene Daten\\Dokumente\\3D Modelle\\heightmap.png", worldSize);
   world.getCamera().setWindowSize(width, height);
-  world.getCamera().setFocus({worldSize.x() / 2, 0.0f, worldSize.z() / 2});
-  world.getCamera().setDistance((worldSize.x() + worldSize.z()) / 2);
+  world.getCamera().setFocus({worldSize.x() / 2, worldSize.y() / 2, 0.0f});
+  world.getCamera().setDistance((worldSize.x() + worldSize.y()) / 2);
   world.addRandomPeople(g_startPopulation);
   uint32_t const numApplesStart = static_cast<uint32_t>(
       static_cast<double>(g_numNewApples) * g_appleLifeTime / g_newAppleTime);

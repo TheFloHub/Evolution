@@ -154,7 +154,7 @@ void World::render() const
   glEnable(GL_COLOR_MATERIAL);
   glShadeModel(GL_SMOOTH);
 
-     GLfloat mat_specular[] = {1.0, 1.0, 1.0, 1.0};
+  GLfloat mat_specular[] = {1.0, 1.0, 1.0, 1.0};
   GLfloat mat_shininess[] = {50.0};
   GLfloat light_position[] = {1.0, 1.0, 1.0, 0.0};
   glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
@@ -166,18 +166,22 @@ void World::render() const
   std::array<float, 4> const lp = {1, 1, 1, 0};
   glLightfv(GL_LIGHT0, GL_POSITION, lp.data());
 
-  glDisable(GL_CULL_FACE);
+  // init
+  glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  // camera
   m_camera.applyMatrix();
+
+  // terrain
   m_terrain.render();
 
+  // persons
   GLUquadricObj * quadric;
   quadric = gluNewQuadric();
   gluQuadricDrawStyle(quadric, GLU_FILL);
-
-  // persons
   for (auto const & p : m_persons)
   {
     glPushMatrix();
@@ -205,8 +209,8 @@ void World::render() const
 Vector3f World::getRandomPosition() const
 {
   std::uniform_real_distribution<float> xdis{0.0f, getSize().x()};
-  std::uniform_real_distribution<float> zdis{0.0f, getSize().z()};
-  return {xdis(g_rng), 0.0f, zdis(g_rng)};
+  std::uniform_real_distribution<float> ydis{0.0f, getSize().y()};
+  return {xdis(g_rng), ydis(g_rng), 0.0f};
 }
 
 void World::addRandomPeople(uint32_t number)

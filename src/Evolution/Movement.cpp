@@ -38,14 +38,14 @@ void NormalMovement::move(Person & p, World const & world,
 
   // movement
   double mdx = 0.0;
-  double mdz = 0.0;
+  double mdy = 0.0;
   double const srsq = p.m_sensingRange * p.m_sensingRange;
   if (p.isHungry() && closestAppleDistance < srsq)
   {
     auto const apple = std::begin(apples) + closestAppleIndex;
     Vector3f const dxy = (apple->m_position - p.m_position).normalized();
     mdx = dxy.x();
-    mdz = dxy.z();
+    mdy = dxy.y();
   }
   else
   {
@@ -57,13 +57,13 @@ void NormalMovement::move(Person & p, World const & world,
     }
 
     mdx = std::cos(m_dirAngle);
-    mdz = std::sin(m_dirAngle);
+    mdy = std::sin(m_dirAngle);
   }
 
   p.m_position.x() += static_cast<float>(deltaTime * p.m_speed * mdx);
-  p.m_position.z() += static_cast<float>(deltaTime * p.m_speed * mdz);
+  p.m_position.y() += static_cast<float>(deltaTime * p.m_speed * mdy);
   auto const & worldSize = world.getSize();
   p.m_position.x() = std::clamp(p.m_position.x(), 0.0f, worldSize.x());
-  p.m_position.z() = std::clamp(p.m_position.z(), 0.0f, worldSize.z());
+  p.m_position.y() = std::clamp(p.m_position.y(), 0.0f, worldSize.y());
 }
 } // namespace evo
