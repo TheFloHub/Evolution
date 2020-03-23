@@ -24,11 +24,16 @@ add_executable(${PROJECT_NAME}
 
 	Input/InputManager.h
 	Input/InputManager.cpp
+
+	Importer/stb_image.h
+	Importer/stb_image.cpp
 	
 	Graphics/GlInfo.h
 	Graphics/GlInfo.cpp
 	Graphics/Camera.h
-	Graphics/Camera.cpp)
+	Graphics/Camera.cpp
+	Graphics/Texture.h
+	Graphics/Texture.cpp)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw GLEW::GLEW)
 target_include_directories(${PROJECT_NAME} PRIVATE ./)

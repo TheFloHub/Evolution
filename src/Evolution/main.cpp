@@ -59,7 +59,7 @@ void runNormalMode()
   }
 
   // Create a windowed mode window and its OpenGL context.
-  int const windowWidth = 800;
+  int const windowWidth = 1200;
   int const windowHeight = 800;
 
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -239,8 +239,8 @@ void runFastMode()
 
 int main()
 {
-  runNormalMode();
-  // runFastMode();
+  //runNormalMode();
+  runFastMode();
 
   exit(EXIT_SUCCESS);
 }

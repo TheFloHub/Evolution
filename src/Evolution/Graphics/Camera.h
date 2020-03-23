@@ -20,9 +20,9 @@ private:
 
   uint32_t m_windowWidth{100};
   uint32_t m_windowHeight{100};
-  float m_fovY{60.0f};
-  float m_nearPlane{10.0f};
-  float m_farPlane{1000.0f};
+  float m_fovY{70.0f};
+  float m_nearPlane{200.0f};
+  float m_farPlane{2000.0f};
   Vector3f m_focus{0.0f, 0.0f, 0.0f};
   float m_distance{0.0f};
   Transform3f m_lastRotation{Transform3f::Identity()};
