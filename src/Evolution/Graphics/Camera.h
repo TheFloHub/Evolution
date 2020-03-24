@@ -21,7 +21,7 @@ private:
   uint32_t m_windowWidth{100};
   uint32_t m_windowHeight{100};
   float m_fovY{70.0f};
-  float m_nearPlane{200.0f};
+  float m_nearPlane{10.0f};
   float m_farPlane{2000.0f};
   Vector3f m_focus{0.0f, 0.0f, 0.0f};
   float m_distance{0.0f};
@@ -31,5 +31,6 @@ private:
   Vector3f m_endVector{0.0f, 0.0f, 0.0f};
   float m_adjustWidth{1.0f};
   float m_adjustHeight{1.0f};
+  float m_scrollSpeed{10.0f};
 };
 } // namespace evo

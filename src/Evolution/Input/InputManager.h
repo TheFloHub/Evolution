@@ -127,6 +127,10 @@ public:
 
   double getMouseDeltaY() const;
 
+  double getMouseWheelDeltaX() const;
+
+  double getMouseWheelDeltaY() const;
+
   Vector2d getMousePosition() const;
 
 private:
@@ -149,6 +153,13 @@ private:
   static void cursorPositionCallback(GLFWwindow * window, double xpos,
                                      double ypos);
 
+  static void scrollCallback(GLFWwindow * window, double xoffset,
+                             double yoffset);
+
+  // TODO:
+  //static void cursorEnterCallback(GLFWwindow * window, int entered);
+
+
   std::vector<unsigned char> mKey;
 
   std::vector<unsigned char> mKeyDown;
@@ -168,6 +179,9 @@ private:
   double mDiffX;
 
   double mDiffY;
+
+  double m_mouseWheelDeltaX{0.0};
+  double m_mouseWheelDeltaY{0.0};
 };
 
 } // namespace evo

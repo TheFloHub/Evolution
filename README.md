@@ -11,6 +11,7 @@
 - add temperature (most influenced by height)
 - add water
 - (add wind?)
+- persons can age and die after some time? non stoppable decay???
 
 - distinguish between seeing, smelling and hearing? so different kinds of senses (so flowers or other could pretend to smell like food but are poisened)
 

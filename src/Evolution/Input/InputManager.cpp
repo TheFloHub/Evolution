@@ -12,8 +12,8 @@ evo::InputManager & evo::InputManager::getInstance()
   return instance;
 }
 
-void evo::InputManager::keyCallback(GLFWwindow * pWindow, int key, int /*scancode*/,
-                                    int action, int /*mods*/)
+void evo::InputManager::keyCallback(GLFWwindow * pWindow, int key,
+                                    int /*scancode*/, int action, int /*mods*/)
 {
   if (key < MAX_KEY_ID)
   {
@@ -35,8 +35,9 @@ void evo::InputManager::keyCallback(GLFWwindow * pWindow, int key, int /*scancod
   }
 }
 
-void evo::InputManager::mouseButtonCallback(GLFWwindow * /*pWindow*/, int button,
-                                            int action, int /*mods*/)
+void evo::InputManager::mouseButtonCallback(GLFWwindow * /*pWindow*/,
+                                            int button, int action,
+                                            int /*mods*/)
 {
   if (button < MAX_MOUSE_BUTTON_ID)
   {
@@ -53,13 +54,20 @@ void evo::InputManager::mouseButtonCallback(GLFWwindow * /*pWindow*/, int button
   }
 }
 
-void evo::InputManager::cursorPositionCallback(GLFWwindow * /*window*/, double xpos,
-                                               double ypos)
+void evo::InputManager::cursorPositionCallback(GLFWwindow * /*window*/,
+                                               double xpos, double ypos)
 {
   getInstance().mDiffX = xpos - getInstance().mLastX;
   getInstance().mDiffY = ypos - getInstance().mLastY;
   getInstance().mLastX = xpos;
   getInstance().mLastY = ypos;
+}
+
+void evo::InputManager::scrollCallback(GLFWwindow * /*window*/, double xoffset,
+                                       double yoffset)
+{
+  getInstance().m_mouseWheelDeltaX += xoffset;
+  getInstance().m_mouseWheelDeltaY += yoffset;
 }
 
 evo::InputManager::InputManager()
@@ -78,7 +86,8 @@ void evo::InputManager::init(GLFWwindow * pWindow)
   glfwSetKeyCallback(pWindow, keyCallback);
   glfwSetMouseButtonCallback(pWindow, mouseButtonCallback);
   glfwSetCursorPosCallback(pWindow, cursorPositionCallback);
-  //glfwSetInputMode(pWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwSetScrollCallback(pWindow, scrollCallback);
+  // glfwSetInputMode(pWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   glfwGetCursorPos(pWindow, &mLastX, &mLastY);
 }
 
@@ -93,6 +102,8 @@ void evo::InputManager::resetFrame()
 
   mDiffX = 0.0;
   mDiffY = 0.0;
+  m_mouseWheelDeltaX = 0.0;
+  m_mouseWheelDeltaY = 0.0;
 }
 
 bool evo::InputManager::getKey(KeyboardInput name) const
@@ -126,9 +137,18 @@ bool evo::InputManager::getMouseButtonUp(MouseInput name) const
 }
 
 double evo::InputManager::getMouseDeltaX() const { return mDiffX; }
+double evo::InputManager::getMouseDeltaY() const { return mDiffY; }
+
+double evo::InputManager::getMouseWheelDeltaX() const
+{
+  return m_mouseWheelDeltaX;
+}
+double evo::InputManager::getMouseWheelDeltaY() const
+{
+  return m_mouseWheelDeltaY;
+}
 
 evo::Vector2d evo::InputManager::getMousePosition() const
 {
   return {mLastX, mLastY};
 }
-double evo::InputManager::getMouseDeltaY() const { return mDiffY; }

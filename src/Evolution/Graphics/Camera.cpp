@@ -33,6 +33,7 @@ void Camera::update(double /*deltaTime*/)
   {
     drag(input.getMousePosition().cast<float>());
   }
+  m_distance += m_scrollSpeed*static_cast<float>(input.getMouseWheelDeltaY());
 }
 
 void Camera::startDrag(Vector2f const & point)

@@ -153,16 +153,7 @@ void World::render() const
   glEnable(GL_LIGHT0);
   glEnable(GL_COLOR_MATERIAL);
   glShadeModel(GL_SMOOTH);
-
-  GLfloat mat_specular[] = {1.0, 1.0, 1.0, 1.0};
-  GLfloat mat_shininess[] = {50.0};
-  GLfloat light_position[] = {1.0, 1.0, 1.0, 0.0};
-  glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-  glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-  glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
   glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-  glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
   std::array<float, 4> const lp = {1, 1, 1, 0};
   glLightfv(GL_LIGHT0, GL_POSITION, lp.data());
 
