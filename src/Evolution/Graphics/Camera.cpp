@@ -16,32 +16,42 @@ void Camera::setWindowSize(uint32_t width, uint32_t height)
     m_adjustWidth = 2.0f / width;
     m_adjustHeight = 2.0f / height;
   }
+  updateMatrices();
 }
 
+void Camera::setDistance(float distance)
+{
+  m_distance = distance;
+  updateMatrices();
+}
 
-void Camera::setFocus(Vector3f const & focus) { m_focus = focus; }
-void Camera::setDistance(float distance) { m_distance = distance; }
+void Camera::setFocus(Vector3f const & focus)
+{
+  m_focus = focus;
+  updateMatrices();
+}
 
 void Camera::update(double /*deltaTime*/)
 {
   auto & input = InputManager::getInstance();
   if (input.getMouseButtonDown(MOUSE_BUTTON_1))
   {
-    startDrag(input.getMousePosition().cast<float>());
+    startRotationDrag(input.getMousePosition().cast<float>());
   }
   if (input.getMouseButton(MOUSE_BUTTON_1))
   {
-    drag(input.getMousePosition().cast<float>());
+    rotationDrag(input.getMousePosition().cast<float>());
   }
-  m_distance += m_scrollSpeed*static_cast<float>(input.getMouseWheelDeltaY());
+  m_distance += m_scrollSpeed * static_cast<float>(input.getMouseWheelDeltaY());
+  updateMatrices();
 }
 
-void Camera::startDrag(Vector2f const & point)
+void Camera::startRotationDrag(Vector2f const & point)
 {
   m_lastRotation = m_currentRotation;
   mapToSphere(point, m_startVector);
 }
-void Camera::drag(Vector2f const & point)
+void Camera::rotationDrag(Vector2f const & point)
 {
   mapToSphere(point, m_endVector);
   Vector3f const axis = m_startVector.cross(m_endVector).normalized();
@@ -51,7 +61,8 @@ void Camera::drag(Vector2f const & point)
   m_currentRotation = newRotation * m_lastRotation;
 }
 
-void Camera::mapToSphere(Vector2f const & point, Vector3f & vector) {
+void Camera::mapToSphere(Vector2f const & point, Vector3f & vector)
+{
   // adjust point coords and scale down to range of [-1 ... 1]
   Vector2f const tempPoint(1.0f - (point.x() * m_adjustWidth),
                            1.0f - (point.y() * m_adjustHeight));
@@ -63,7 +74,7 @@ void Camera::mapToSphere(Vector2f const & point, Vector3f & vector) {
     vector.y() = tempPoint.y() * norm;
     vector.z() = 0.0f;
   }
-  else 
+  else
   {
     vector.x() = tempPoint.x();
     vector.y() = tempPoint.y();
@@ -71,23 +82,50 @@ void Camera::mapToSphere(Vector2f const & point, Vector3f & vector) {
   }
 }
 
-void Camera::applyMatrix() const
+Transform3f const & Camera::getCameraToWorldTrafo() const
 {
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluPerspective(m_fovY,
-                 static_cast<double>(m_windowWidth) /
-                     static_cast<double>(m_windowHeight),
-                 m_nearPlane, m_farPlane);
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glRotatef(180, 0, 1, 0);
-  // distance from camera to object
-  glTranslatef(0, 0, m_distance);
-  // arc ball rotation matrix
-  glMultMatrixf(m_currentRotation.data());
-  // move focus to zero point
-  glTranslatef(-m_focus.x(), -m_focus.y(), -m_focus.z());
+  return m_cameraToWorldTrafo;
 }
+
+Transform3f const & Camera::getWorldToCameraTrafo() const
+{
+  return m_worldToCameraTrafo;
+}
+
+Matrix4f const & Camera::getProjectionMatrix() const { return m_projection; }
+Matrix4f const & Camera::getFullProjectionMatrix() const
+{
+  return m_fullProjection;
+}
+
+void Camera::updateMatrices()
+{
+  // transformation
+  Transform3f m180 = Transform3f::Identity();
+  m180(0, 0) = -1;
+  m180(2, 2) = -1;
+  Transform3f td = Transform3f::Identity();
+  td.translation() = Vector3f(0.0f, 0.0f, m_distance);
+  Transform3f tf = Transform3f::Identity();
+  tf.translation() = -m_focus;
+
+  m_worldToCameraTrafo = m180 * td * m_currentRotation * tf;
+  m_cameraToWorldTrafo = m_worldToCameraTrafo.inverse();
+
+  // projection
+  float const f = 1.0f / tan(0.0174533f * m_fovY / 2.0f);
+  float const aspect =
+      static_cast<float>(m_windowWidth) / static_cast<float>(m_windowHeight);
+  m_projection = Matrix4f::Zero();
+  m_projection(0, 0) = f / aspect;
+  m_projection(1, 1) = f;
+  m_projection(2, 2) = (m_farPlane + m_nearPlane) / (m_nearPlane - m_farPlane);
+  m_projection(2, 3) =
+      (2.0f * m_farPlane * m_nearPlane) / (m_nearPlane - m_farPlane);
+  m_projection(3, 2) = -1.0;
+
+  // full
+  m_fullProjection = m_projection * m_worldToCameraTrafo.matrix();
+}
+
 } // namespace evo

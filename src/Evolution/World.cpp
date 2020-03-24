@@ -164,7 +164,12 @@ void World::render() const
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // camera
-  m_camera.applyMatrix();
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glMultMatrixf(m_camera.getProjectionMatrix().data());
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glMultMatrixf(m_camera.getWorldToCameraTrafo().data());
 
   // terrain
   m_terrain.render();
