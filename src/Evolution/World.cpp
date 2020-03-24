@@ -181,7 +181,7 @@ void World::render() const
     double const c = p.m_sensingRange / 120.0;
     glColor3d(1.0, c, c);
     glTranslatef(p.m_position.x(), p.m_position.y(), p.m_position.z());
-    gluSphere(quadric, 10, 18, 9);
+    gluSphere(quadric, 4, 18, 9);
     glPopMatrix();
   }
 
@@ -191,7 +191,7 @@ void World::render() const
   {
     glPushMatrix();
     glTranslatef(a.m_position.x(), a.m_position.y(), a.m_position.z());
-    gluSphere(quadric, 6, 18, 9);
+    gluSphere(quadric, 2, 18, 9);
     glPopMatrix();
   }
   gluDeleteQuadric(quadric);
