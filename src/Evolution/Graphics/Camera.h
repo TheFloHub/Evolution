@@ -23,6 +23,7 @@ private:
   void startRotationDrag(Vector2f const & point);
   void rotationDrag(Vector2f const & point);
   void mapToSphere(Vector2f const & point, Vector3f & vector);
+  void startTranslationDrag(Vector2f const & point);
   void updateMatrices();
 
   uint32_t m_windowWidth{100};
@@ -43,5 +44,6 @@ private:
   Transform3f m_worldToCameraTrafo{Transform3f::Identity()};
   Matrix4f m_projection{Matrix4f::Identity()};
   Matrix4f m_fullProjection{Matrix4f::Identity()};
+  Matrix3f m_invCam{Matrix3f::Identity()};
 };
 } // namespace evo
