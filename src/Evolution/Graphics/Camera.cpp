@@ -44,11 +44,11 @@ void Camera::update(double /*deltaTime*/)
   }
   if (input.getMouseButtonDown(MOUSE_BUTTON_2))
   {
-    startTranslationDrag(input.getMousePosition());
+    startTranslationDrag(input.getMousePosition().cast<float>());
   }
   if (input.getMouseButton(MOUSE_BUTTON_2))
   {
-    translationDrag(input.getMousePosition());
+    translationDrag(input.getMousePosition().cast<float>());
   }
 
   m_distance += m_scrollSpeed * static_cast<float>(input.getMouseWheelDeltaY());
@@ -56,63 +56,65 @@ void Camera::update(double /*deltaTime*/)
   updateMatrices();
 }
 
-void Camera::startTranslationDrag(Vector2d const & point)
+void Camera::startTranslationDrag(Vector2f const & point)
 {
-  m_lastFocus = m_focus.cast<double>();
+  m_lastFocus = m_focus;
   mapToPlane(point, m_startTranslationPoint);
 }
 
-void Camera::translationDrag(Vector2d const & point)
+void Camera::translationDrag(Vector2f const & point)
 {
-  Vector3d endPoint{0.0, 0.0, 0.0};
+  Vector3f endPoint{0.0f, 0.0f, 0.0f};
   mapToPlane(point, endPoint);
-  m_focus = (m_lastFocus + m_startTranslationPoint - endPoint).cast<float>();
+  m_focus = m_lastFocus + m_startTranslationPoint - endPoint;
 }
 
-void Camera::mapToPlane(Vector2d const & point, Vector3d & planePoint)
+void Camera::mapToPlane(Vector2f const & point, Vector3f & planePoint)
 {
   // camera matrix
-  Matrix3d cm = Matrix3d::Identity();
-  cm(0, 0) = -static_cast<double>(m_windowHeight) /
-             (2.0 * std::tan(0.0174533 * 0.5 * m_fovY));
+  Matrix3f cm = Matrix3f::Identity();
+  cm(0, 0) = -static_cast<float>(m_windowHeight) /
+             (2.0f * std::tan(0.0174533f * 0.5f * m_fovY));
   cm(1, 1) = cm(0, 0);
-  cm(0, 2) = static_cast<double>(m_windowWidth) / 2.0;
-  cm(1, 2) = static_cast<double>(m_windowHeight) / 2.0;
+  cm(0, 2) = static_cast<float>(m_windowWidth) / 2.0f;
+  cm(1, 2) = static_cast<float>(m_windowHeight) / 2.0f;
 
   // world to camera trafo
-  Transform3d td = Transform3d::Identity();
-  td.translation() = Vector3d(0.0, 0.0, m_distance);
-  Transform3d tf = Transform3d::Identity();
-  tf.translation() = -m_lastFocus.cast<double>();
+  Transform3f td = Transform3f::Identity();
+  td.translation() = Vector3f(0.0f, 0.0f, m_distance);
+  Transform3f tf = Transform3f::Identity();
+  tf.translation() = -m_lastFocus;
 
-  Transform3d const w2c = td * m_currentRotation.cast<double>() * tf;
-  Transform3d const c2w = w2c.inverse();
+  Transform3f const w2c = td * m_rotation * tf;
+  Transform3f const c2w = w2c.inverse();
 
-  Matrix3d icm = (cm * w2c.linear()).inverse();
+  Matrix3f const icm = (cm * w2c.linear()).inverse();
 
-  Vector3d const ray = (icm * Vector3d(point.x(), point.y(), 1.0)).normalized();
-  Vector3d const cc = c2w.translation().cast<double>();
-  Vector3d const pn(0.0f, 0.0f, 1.0f);
+  Vector3f const ray = (icm * Vector3f(point.x(), point.y(), 1.0f)).normalized();
+  Vector3f const cc = c2w.translation();
+  Vector3f const pn(0.0f, 0.0f, 1.0f);
 
-  double const t = (-pn.dot(cc)) / (pn.dot(ray));
+  float const t = (-pn.dot(cc)) / (pn.dot(ray));
   planePoint = cc + t * ray;
 }
 
 void Camera::startRotationDrag(Vector2f const & point)
 {
-  m_lastRotation = m_currentRotation;
-  mapToSphere(point, m_startVector);
+  m_lastRotation = m_rotation;
+  mapToSphere(point, m_startRotationVector);
 }
 void Camera::rotationDrag(Vector2f const & point)
 {
-  mapToSphere(point, m_endVector);
-  Vector3f const axis = m_startVector.cross(m_endVector).normalized();
-  float const dot = std::clamp(m_startVector.dot(m_endVector), -1.0f, 1.0f);
+  Vector3f endVector{0.0, 0.0, 0.0};
+  mapToSphere(point, endVector);
+  Vector3f const axis = m_startRotationVector.cross(endVector).normalized();
+  float const dot =
+      std::clamp(m_startRotationVector.dot(endVector), -1.0f, 1.0f);
   float const angle = std::acos(dot);
   Eigen::AngleAxisf aa(angle, axis);
   Transform3f newRotation = Transform3f::Identity();
   newRotation.linear() = aa.toRotationMatrix();
-  m_currentRotation = newRotation * m_lastRotation;
+  m_rotation = newRotation * m_lastRotation;
 }
 
 void Camera::mapToSphere(Vector2f const & point, Vector3f & vector)
@@ -136,21 +138,18 @@ void Camera::mapToSphere(Vector2f const & point, Vector3f & vector)
   }
 }
 
-Transform3f const & Camera::getCameraToWorldTrafo() const
+
+
+Transform3f const & Camera::getGlWorldToCameraTrafo() const
 {
-  return m_cameraToWorldTrafo;
+  return m_glWorldToCameraTrafo;
 }
 
-Transform3f const & Camera::getWorldToCameraTrafo() const
+Matrix4f const & Camera::getGlProjectionMatrix() const
 {
-  return m_worldToCameraTrafo;
+  return m_glProjection;
 }
 
-Matrix4f const & Camera::getProjectionMatrix() const { return m_projection; }
-Matrix4f const & Camera::getFullProjectionMatrix() const
-{
-  return m_fullProjection;
-}
 
 void Camera::updateMatrices()
 {
@@ -162,32 +161,19 @@ void Camera::updateMatrices()
   td.translation() = Vector3f(0.0f, 0.0f, m_distance);
   Transform3f tf = Transform3f::Identity();
   tf.translation() = -m_focus;
-
-  m_worldToCameraTrafo = m180 * td * m_currentRotation * tf;
-  m_cameraToWorldTrafo = m_worldToCameraTrafo.inverse();
+  m_glWorldToCameraTrafo = m180 * td * m_rotation * tf;
 
   // projection
   float const f = 1.0f / std::tan(0.0174533f * m_fovY / 2.0f);
   float const aspect =
       static_cast<float>(m_windowWidth) / static_cast<float>(m_windowHeight);
-  m_projection = Matrix4f::Zero();
-  m_projection(0, 0) = f / aspect;
-  m_projection(1, 1) = f;
-  m_projection(2, 2) = (m_farPlane + m_nearPlane) / (m_nearPlane - m_farPlane);
-  m_projection(2, 3) =
+  m_glProjection = Matrix4f::Zero();
+  m_glProjection(0, 0) = f / aspect;
+  m_glProjection(1, 1) = f;
+  m_glProjection(2, 2) = (m_farPlane + m_nearPlane) / (m_nearPlane - m_farPlane);
+  m_glProjection(2, 3) =
       (2.0f * m_farPlane * m_nearPlane) / (m_nearPlane - m_farPlane);
-  m_projection(3, 2) = -1.0;
-
-  // full
-  m_fullProjection = m_projection * m_worldToCameraTrafo.matrix();
-
-  Matrix3f cm = Matrix3f::Identity();
-  cm(0, 0) = 2.0f / m_windowWidth;
-  cm(1, 1) = 2.0f / m_windowWidth;
-  cm(0, 2) = m_windowWidth / 2.0f;
-  cm(1, 2) = m_windowHeight / 2.0f;
-
-  m_invCam = (cm * m_worldToCameraTrafo.linear()).inverse();
+  m_glProjection(3, 2) = -1.0;
 }
 
 } // namespace evo

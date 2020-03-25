@@ -166,10 +166,10 @@ void World::render() const
   // camera
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glMultMatrixf(m_camera.getProjectionMatrix().data());
+  glMultMatrixf(m_camera.getGlProjectionMatrix().data());
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  glMultMatrixf(m_camera.getWorldToCameraTrafo().data());
+  glMultMatrixf(m_camera.getGlWorldToCameraTrafo().data());
 
   // terrain
   m_terrain.render();
