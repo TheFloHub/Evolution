@@ -23,7 +23,9 @@ private:
   void startRotationDrag(Vector2f const & point);
   void rotationDrag(Vector2f const & point);
   void mapToSphere(Vector2f const & point, Vector3f & vector);
-  void startTranslationDrag(Vector2f const & point);
+  void startTranslationDrag(Vector2d const & point);
+  void translationDrag(Vector2d const & point);
+  void mapToPlane(Vector2d const & point, Vector3d & planePoint);
   void updateMatrices();
 
   uint32_t m_windowWidth{100};
@@ -40,6 +42,10 @@ private:
   float m_adjustWidth{1.0f};
   float m_adjustHeight{1.0f};
   float m_scrollSpeed{10.0f};
+
+  Vector3d m_startTranslationPoint{0.0, 0.0, 0.0};
+  Vector3d m_lastFocus{0.0, 0.0, 0.0};
+
   Transform3f m_cameraToWorldTrafo{Transform3f::Identity()};
   Transform3f m_worldToCameraTrafo{Transform3f::Identity()};
   Matrix4f m_projection{Matrix4f::Identity()};

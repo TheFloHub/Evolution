@@ -107,7 +107,7 @@ public:
 
   ~InputManager();
 
-  void init(GLFWwindow * pWindow);
+  void init(GLFWwindow * window);
 
   void resetFrame();
 
@@ -159,6 +159,7 @@ private:
   // TODO:
   //static void cursorEnterCallback(GLFWwindow * window, int entered);
 
+  GLFWwindow * m_window{nullptr};
 
   std::vector<unsigned char> mKey;
 

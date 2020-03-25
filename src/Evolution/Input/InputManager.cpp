@@ -81,14 +81,15 @@ evo::InputManager::InputManager()
 
 evo::InputManager::~InputManager() {}
 
-void evo::InputManager::init(GLFWwindow * pWindow)
+void evo::InputManager::init(GLFWwindow * window)
 {
-  glfwSetKeyCallback(pWindow, keyCallback);
-  glfwSetMouseButtonCallback(pWindow, mouseButtonCallback);
-  glfwSetCursorPosCallback(pWindow, cursorPositionCallback);
-  glfwSetScrollCallback(pWindow, scrollCallback);
+  m_window = window;
+  glfwSetKeyCallback(window, keyCallback);
+  glfwSetMouseButtonCallback(window, mouseButtonCallback);
+  glfwSetCursorPosCallback(window, cursorPositionCallback);
+  glfwSetScrollCallback(window, scrollCallback);
   // glfwSetInputMode(pWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-  glfwGetCursorPos(pWindow, &mLastX, &mLastY);
+  glfwGetCursorPos(window, &mLastX, &mLastY);
 }
 
 void evo::InputManager::resetFrame()
