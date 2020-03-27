@@ -52,10 +52,10 @@ Texture::Texture(std::string const & textureFileName)
       m_internalFormat = GL_RGBA;
       CHECKGLERROR();
     }
-    glGenerateMipmap(GL_TEXTURE_2D);
+    //glGenerateMipmap(GL_TEXTURE_2D);
     CHECKGLERROR();
-    repeat();
-    highQuality();
+    clampToBorder();
+    lowQuality();
     glBindTexture(GL_TEXTURE_2D, 0);
   }
   else

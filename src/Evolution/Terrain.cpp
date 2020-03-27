@@ -192,7 +192,9 @@ void Terrain::createFromImage(std::string const & imageFilePath,
     m_mesh = std::make_unique<Mesh>(vertices, normals, texCoords, indices);
 
 
-    m_texture = std::make_unique<Texture>(imageFilePath);
+    //m_texture = std::make_unique<Texture>(
+    //    "D:\\Eigene Daten\\Dokumente\\3D Modelle\\hm60c.png");
+    //m_texture->highQuality();
     //uint32_t const nw = 2 * (m_width - 1);
     //uint32_t const nh = 2 * (m_height - 1);
 
@@ -212,8 +214,16 @@ void Terrain::render() const
   glColor3f(1.0f, 1.0f, 1.0f);
   if (m_mesh)
   {
+    //glDisable(GL_LIGHTING);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     m_mesh->render();
+    //glEnable(GL_LIGHTING);
+    //glLineWidth(2.0f);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //m_mesh->render();
   }
+
+
   //glBegin(GL_TRIANGLES); // STRIP?
   //glColor3f(1.0f, 1.0f, 1.0f);
   //uint32_t ni = 0;

@@ -16,10 +16,10 @@ using namespace evo;
 
 bool initEvo(int width, int height, World & world)
 {
-  Vector3f const worldSize(1000.0f, 1000.0f, 150.0f);
+  Vector3f const worldSize(1000.0f, 1000.0f, 200.0f);
   glViewport(0, 0, width, height);
   world.getTerrain().createFromImage(
-      "D:\\Eigene Daten\\Dokumente\\3D Modelle\\hm6.png", worldSize);
+      "D:\\Eigene Daten\\Dokumente\\3D Modelle\\hm60.png", worldSize);
   world.getCamera().setWindowSize(width, height);
   world.getCamera().setFocus({worldSize.x() / 2, worldSize.y() / 2, 0.0f});
   world.getCamera().setDistance((worldSize.x() + worldSize.y()) / 2);
@@ -65,6 +65,7 @@ void runNormalMode()
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+  glfwWindowHint(GLFW_SAMPLES, 4); // ANTI ALIAZING
   window =
       glfwCreateWindow(windowWidth, windowHeight, "Hello World", NULL, NULL);
   glfwSetWindowPos(window, 100, 50);
