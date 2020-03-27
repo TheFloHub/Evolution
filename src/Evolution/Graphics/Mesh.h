@@ -18,13 +18,12 @@ public:
        std::vector<GLuint> const & indices);
 
   ~Mesh();
+  Mesh(Mesh const &) = delete;
+  Mesh & operator=(Mesh const &) = delete;
 
   void render() const;
 
 private:
-  Mesh(Mesh const &) = delete;
-
-  Mesh & operator=(Mesh const &) = delete;
 
   /** Generates the contained VBO's. */
   void generateVbos(std::vector<GLfloat> const & vertices,

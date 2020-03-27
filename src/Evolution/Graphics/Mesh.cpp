@@ -75,19 +75,27 @@ void Mesh::generateVbos(std::vector<GLfloat> const & vertices,
 
   glBindVertexArray(mVao);
 
+
+    glEnableClientState(GL_VERTEX_ARRAY); // activate vertex position array
+  glEnableClientState(GL_NORMAL_ARRAY); // activate vertex normal array
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+
   // vertices
   glBindBuffer(GL_ARRAY_BUFFER, mVboVertices);
   glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat),
                vertices.data(), GL_STATIC_DRAW);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+  //glEnableVertexAttribArray(0);
+  //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+  glVertexPointer(3, GL_FLOAT, 0, 0);
 
   // normals
   glBindBuffer(GL_ARRAY_BUFFER, mVboNormals);
   glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(GLfloat),
                normals.data(), GL_STATIC_DRAW);
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+  //glEnableVertexAttribArray(1);
+  //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+  glNormalPointer(GL_FLOAT, 0, 0);
 
   // tex coords
   if (hasTexCoords)
@@ -95,14 +103,22 @@ void Mesh::generateVbos(std::vector<GLfloat> const & vertices,
     glBindBuffer(GL_ARRAY_BUFFER, mVboTexcoords);
     glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(GLfloat),
                  texCoords.data(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+    //glEnableVertexAttribArray(2);
+    //glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glTexCoordPointer(2, GL_FLOAT, 0, 0);
   }
 
   // indices
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mVboIndices);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
                indices.data(), GL_STATIC_DRAW);
+
+
+
+        glDisableClientState(GL_VERTEX_ARRAY); // activate vertex position array
+  glDisableClientState(GL_NORMAL_ARRAY); // activate vertex normal array
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
 
   glBindVertexArray(0);
 
@@ -112,9 +128,21 @@ void Mesh::generateVbos(std::vector<GLfloat> const & vertices,
 
 void Mesh::render() const
 {
+
+
+
   glBindVertexArray(mVao);
+
+    glEnableClientState(GL_VERTEX_ARRAY); // activate vertex position array
+  glEnableClientState(GL_NORMAL_ARRAY); // activate vertex normal array
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
   glDrawRangeElements(GL_TRIANGLES, 0, mNumberOfVertices,
                       mNumberOfElementsToDraw, GL_UNSIGNED_INT, 0);
+
+      glDisableClientState(GL_VERTEX_ARRAY); // activate vertex position array
+  glDisableClientState(GL_NORMAL_ARRAY); // activate vertex normal array
+      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glBindVertexArray(0);
 }
 
