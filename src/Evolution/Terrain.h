@@ -21,6 +21,8 @@ public:
 
   void render() const;
 
+  float getHeight(Vector2f const & xy) const;
+
 private:
   // length of the terrain in x, y and z (up)
   Vector3f m_size{0.0f, 0.0f, 0.0f};

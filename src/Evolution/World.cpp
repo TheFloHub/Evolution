@@ -22,6 +22,7 @@ std::vector<Apple> & World::getApples() { return m_apples; }
 std::vector<Person> & World::getPersons() { return m_persons; }
 Vector3f const & World::getSize() const { return m_terrain.getSize(); }
 Terrain & World::getTerrain() { return m_terrain; }
+Terrain const & World::getTerrain() const { return m_terrain; }
 Camera & World::getCamera() { return m_camera; }
 
 void World::update(double const deltaTime)
@@ -206,7 +207,9 @@ Vector3f World::getRandomPosition() const
 {
   std::uniform_real_distribution<float> xdis{0.0f, getSize().x()};
   std::uniform_real_distribution<float> ydis{0.0f, getSize().y()};
-  return {xdis(g_rng), ydis(g_rng), 0.0f};
+  float const x = xdis(g_rng);
+  float const y = ydis(g_rng);
+  return {x, y, m_terrain.getHeight({x, y})};
 }
 
 void World::addRandomPeople(uint32_t number)

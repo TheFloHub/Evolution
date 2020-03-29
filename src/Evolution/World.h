@@ -25,6 +25,7 @@ public:
   Vector3f const & getSize() const;
 
   Terrain & getTerrain();
+  Terrain const & getTerrain() const;
 
   Camera & getCamera();
   Vector3f getRandomPosition() const;

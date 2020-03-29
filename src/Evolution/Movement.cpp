@@ -65,5 +65,6 @@ void NormalMovement::move(Person & p, World const & world,
   auto const & worldSize = world.getSize();
   p.m_position.x() = std::clamp(p.m_position.x(), 0.0f, worldSize.x());
   p.m_position.y() = std::clamp(p.m_position.y(), 0.0f, worldSize.y());
+  p.m_position.z() = world.getTerrain().getHeight(p.m_position.head<2>());
 }
 } // namespace evo

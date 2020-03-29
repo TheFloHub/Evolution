@@ -1,6 +1,6 @@
 #include "Terrain.h"
-#include "gl/glew.h"
 #include "Importer/stb_image.h"
+#include "gl/glew.h"
 #include <iostream>
 
 namespace evo
@@ -34,7 +34,7 @@ void Terrain::createFromImage(std::string const & imageFilePath,
     m_heights.reserve(numPixels);
     for (uint32_t i = 0; i < numPixels; ++i)
     {
-      m_heights.emplace_back(static_cast<float>(image[i])/255.0f);
+      m_heights.emplace_back(static_cast<float>(image[i]) / 255.0f);
     }
 
     // setup mesh
@@ -43,14 +43,14 @@ void Terrain::createFromImage(std::string const & imageFilePath,
     float const sz = m_size.z();
 
     float const texScaleX =
-        (1.0f/static_cast<float>(m_width - 1)) *
+        (1.0f / static_cast<float>(m_width - 1)) *
         (static_cast<float>(m_width - 1) / static_cast<float>(m_width));
     float const texScaleY =
         (1.0f / static_cast<float>(m_height - 1)) *
         (static_cast<float>(m_height - 1) / static_cast<float>(m_height));
     float const texOffsetX = 0.5f * (1.0f / static_cast<float>(m_width));
     float const texOffsetY = 0.5f * (1.0f / static_cast<float>(m_height));
-    
+
     std::vector<Vector3f> vertices3{};
     std::vector<Vector2f> texCoords2{};
     vertices3.reserve(m_width * m_height);
@@ -64,7 +64,7 @@ void Terrain::createFromImage(std::string const & imageFilePath,
         float const yf = static_cast<float>(y);
         vertices3.emplace_back(xf * sx, yf * sy, m_heights[i] * sz);
         texCoords2.emplace_back(texOffsetX + xf * texScaleX,
-                               texOffsetY + yf * texScaleY);
+                                texOffsetY + yf * texScaleY);
         ++i;
       }
     }
@@ -82,7 +82,7 @@ void Terrain::createFromImage(std::string const & imageFilePath,
         uint32_t const br = bl + 1;
         uint32_t const tl = bl + m_width;
         uint32_t const tr = tl + 1;
-        
+
         Vector3f const & vbl = vertices3[bl];
         Vector3f const & vbr = vertices3[br];
         Vector3f const & vtl = vertices3[tl];
@@ -144,7 +144,7 @@ void Terrain::createFromImage(std::string const & imageFilePath,
 
         // second face
 
-                // vertices
+        // vertices
         vertices.emplace_back(vtl.x());
         vertices.emplace_back(vtl.y());
         vertices.emplace_back(vtl.z());
@@ -191,14 +191,11 @@ void Terrain::createFromImage(std::string const & imageFilePath,
     }
     m_mesh = std::make_unique<Mesh>(vertices, normals, texCoords, indices);
 
-
-    //m_texture = std::make_unique<Texture>(
+    // m_texture = std::make_unique<Texture>(
     //    "D:\\Eigene Daten\\Dokumente\\3D Modelle\\hm60c.png");
-    //m_texture->highQuality();
-    //uint32_t const nw = 2 * (m_width - 1);
-    //uint32_t const nh = 2 * (m_height - 1);
-
-
+    // m_texture->highQuality();
+    // uint32_t const nw = 2 * (m_width - 1);
+    // uint32_t const nh = 2 * (m_height - 1);
   }
   stbi_image_free(image);
 }
@@ -214,20 +211,19 @@ void Terrain::render() const
   glColor3f(1.0f, 1.0f, 1.0f);
   if (m_mesh)
   {
-    //glDisable(GL_LIGHTING);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // glDisable(GL_LIGHTING);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     m_mesh->render();
-    //glEnable(GL_LIGHTING);
-    //glLineWidth(2.0f);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    //m_mesh->render();
+    // glEnable(GL_LIGHTING);
+    // glLineWidth(2.0f);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    // m_mesh->render();
   }
 
-
-  //glBegin(GL_TRIANGLES); // STRIP?
-  //glColor3f(1.0f, 1.0f, 1.0f);
-  //uint32_t ni = 0;
-  //for (uint32_t y = 0; y < m_height-1; ++y)
+  // glBegin(GL_TRIANGLES); // STRIP?
+  // glColor3f(1.0f, 1.0f, 1.0f);
+  // uint32_t ni = 0;
+  // for (uint32_t y = 0; y < m_height-1; ++y)
   //{
   //  for (uint32_t x = 0; x < m_width-1; ++x)
   //  {
@@ -253,18 +249,56 @@ void Terrain::render() const
   //    ++ni;
   //  }
   //}
-  //glEnd();
+  // glEnd();
 
-  //glBegin(GL_QUADS);
-  //glColor3f(1.0f, 1.0f, 1.0f);
-  //glNormal3f(0.0f, 0.0f, 1.0f);
-  //glVertex3f(0.0f, 0.0f, 0.0f);
-  //glNormal3f(0.0f, 0.0f, 1.0f);
-  //glVertex3f(m_size.x(), 0.0f, 0.0f);
-  //glNormal3f(0.0f, 0.0f, 1.0f);
-  //glVertex3f(m_size.x(), m_size.y(), 0.0f);
-  //glNormal3f(0.0f, 0.0f, 1.0f);
-  //glVertex3f(0.0f, m_size.y(), 0.0f);
-  //glEnd();
+  // glBegin(GL_QUADS);
+  // glColor3f(1.0f, 1.0f, 1.0f);
+  // glNormal3f(0.0f, 0.0f, 1.0f);
+  // glVertex3f(0.0f, 0.0f, 0.0f);
+  // glNormal3f(0.0f, 0.0f, 1.0f);
+  // glVertex3f(m_size.x(), 0.0f, 0.0f);
+  // glNormal3f(0.0f, 0.0f, 1.0f);
+  // glVertex3f(m_size.x(), m_size.y(), 0.0f);
+  // glNormal3f(0.0f, 0.0f, 1.0f);
+  // glVertex3f(0.0f, m_size.y(), 0.0f);
+  // glEnd();
+}
+
+float Terrain::getHeight(Vector2f const & xy) const
+{
+  if (xy.x() < 0.0f || xy.y() < 0.0f || xy.x() >= m_size.x() ||
+      xy.y() >= m_size.y())
+  {
+    return 0.0f;
+  }
+
+  float const xf = xy.x() * (m_width - 1) / m_size.x();
+  float const yf = xy.y() * (m_height - 1) / m_size.y();
+  uint32_t const xi = static_cast<uint32_t>(xf);
+  uint32_t const yi = static_cast<uint32_t>(yf);
+  float const xfc = xf - xi;
+  float const yfc = yf - yi;
+
+  uint32_t const bl = yi * m_width + xi;
+  uint32_t const br = bl + 1;
+  uint32_t const tl = bl + m_width;
+  uint32_t const tr = tl + 1;
+
+  float const hbl = m_heights[bl];
+  float const hbr = m_heights[br];
+  float const htl = m_heights[tl];
+  float const htr = m_heights[tr];
+
+  // lower left triangle
+  if (xfc + yfc < 1.0f)
+  {
+    return m_size.z() * (hbl + xfc * (hbr - hbl) + yfc * (htl - hbl));
+  }
+  // upper right triangle
+  else
+  {
+    return m_size.z() *
+           (htr + (1.0f - xfc) * (htl - htr) + (1.0f - yfc) * (hbr - htr));
+  }
 }
 } // namespace evo
